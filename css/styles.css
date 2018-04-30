@@ -22,16 +22,14 @@ ul, li {
 
 a {
 	color: orange;
-	text-decoration: none;
 }
 
 a:hover, a:focus {
 	color: #3397db;
-	text-decoration: none;
 }
 
 a img{
-	border: none 0px #fff;
+	border: none 0 #fff;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -67,7 +65,19 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   }
 }
 
+#skip-link {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  background: #BF1722;
+  color: white;
+  padding: 8px;
+  z-index: 100;
+}
 
+#skip-link:focus {
+  top: 0;
+}
 
 #footer {
   background-color: #444;
@@ -98,6 +108,7 @@ nav h1 {
 
 nav h1 a {
   color: #fff;
+  text-decoration: none;
   font-weight: 200;
   letter-spacing: 5px;
   text-transform: uppercase;
@@ -300,7 +311,7 @@ nav h1 a:active {
 
 #restaurant-address {
   font-size: 12pt;
-  margin: 10px 0px;
+  margin: 10px 0;
 }
 
 #restaurant-cuisine {

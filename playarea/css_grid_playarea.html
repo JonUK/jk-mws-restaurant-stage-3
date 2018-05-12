@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CSS Grid Playarea</title>
+
+    <style>
+
+        ul {
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+
+            padding: 20px;
+            background-color: #eee;
+            width: 75%;
+            margin: 30px auto;
+
+            display: grid;
+
+            /*grid-template-rows: 150px 150px;*/
+            /*grid-template-rows: repeat(2, 150px);*/
+
+            /*grid-template-columns: 150px 150px 150px;*/
+            grid-template-columns: repeat(3, 1fr);
+
+            /*grid-row-gap: 30px;*/
+            /*grid-column-gap: 30px;*/
+
+            grid-gap: 30px;
+
+        }
+
+        .item {
+            padding: 20px;
+            font-size: 30px;
+            font-family: sans-serif;
+            color: white;
+        }
+
+        .item--1 {
+            background-color: orangered;
+        }
+
+        .item--2 {
+            background-color: yellowgreen;
+        }
+
+        .item--3 {
+            background-color: blueviolet;
+        }
+
+        .item--4 {
+            background-color: palevioletred;
+        }
+
+        .item--5 {
+            background-color: royalblue;
+        }
+
+        .item--6 {
+            background-color: goldenrod;
+        }
+
+
+
+
+
+    </style>
+
+
+</head>
+<bodliy>
+
+<ul class="container">
+    <li class="item item--1">1: Orange</li>
+    <li class="item item--2">2: Green</li>
+    <li class="item item--3">3: Violet</li>
+    <li class="item item--4">4: Pink</li>
+    <li class="item item--5">5: Blue</li>
+    <li class="item item--6">6: Brown</li>
+</ul>
+
+</bodliy>
+</html>

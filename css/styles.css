@@ -238,13 +238,13 @@ nav h1 a:active {
   grid-template-columns: repeat(1, 1fr);
 }
 
-@media screen and (min-width: 768px) {
+@media screen and (min-width: 680px) {
   #restaurants-list {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
-@media screen and (min-width: 1180px) {
+@media screen and (min-width: 1000px) {
   #restaurants-list {
     grid-template-columns: repeat(3, 1fr);
   }

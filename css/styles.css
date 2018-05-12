@@ -21,11 +21,11 @@ ul, li {
 }
 
 a {
-	color: orange;
+  color: #A36A00;
 }
 
-a:hover, a:focus {
-	color: #3397db;
+a:hover, a:focus, a:active {
+  color: #3397db;
 }
 
 a img{
@@ -80,13 +80,17 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
 }
 
 #footer {
-  background-color: #444;
-  color: #aaa;
+  background-color: #252831;
+  color: #B3B3B3;
   font-size: 8pt;
   letter-spacing: 1px;
   padding: 25px;
   text-align: center;
   text-transform: uppercase;
+}
+
+#footer a {
+  color: #FAA200;
 }
 
 /* ====================== Navigation ====================== */
@@ -178,7 +182,7 @@ nav h1 a:active {
 
 .filter-options {
   padding: 10px;
-  background-color: #3397DB;
+  background-color: #007dbb;
   align-items: center;
   color: white;
 }
@@ -277,13 +281,13 @@ nav h1 a:active {
 
 #restaurants-list li h2 {
   display: inline-block;
-  font-family: Arial,sans-serif;
+  font-family: Arial, sans-serif;
   font-size: 14pt;
   font-weight: 200;
   letter-spacing: 0;
   line-height: 1.3;
-  margin: 0;
-  padding: 20px 0 10px; /* Use padding over margin so tap target is larger */
+  margin: 5px 0 0;
+  padding: 10px 0 10px; /* Padding in place so tap target is larger */
   text-transform: uppercase;
 }
 

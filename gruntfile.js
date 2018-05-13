@@ -6,12 +6,14 @@ module.exports = function (grunt) {
                 options: {
                     sizes: [{
                         width: 200,
+                        quality: 90,
                         separator: "_"
                     },
-                    {
-                        width: 400,
-                        separator: "_"
-                    }]
+                        {
+                            width: 400,
+                            quality: 90,
+                            separator: "_"
+                        }]
                 },
                 files: [{
                     expand: true,

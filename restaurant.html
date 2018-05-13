@@ -9,7 +9,7 @@
   <title>Restaurant Info</title>
 </head>
 
-<body class="inside">
+<body xxxclass="inside">
   <!-- Beginning header -->
   <header>
     <!-- Beginning nav -->
@@ -25,8 +25,92 @@
   </header>
   <!-- End header -->
 
+
+  <style>
+
+    #temp-container {
+      display: flex;
+      flex-wrap: wrap;
+      max-width: 1400px;
+      margin: auto;
+    }
+
+    #temp-container div {
+      box-sizing: border-box;
+      padding: 20px;
+    }
+
+    #temp-photo {
+      width: 100%;
+      background-color: red;
+    }
+
+    #temp-address {
+      width: 100%;
+      background-color: green;
+    }
+
+    #temp-opening-times {
+      width: 100%;
+      background-color: yellow;
+    }
+
+    #temp-map {
+      width: 100%;
+      background-color: orange;
+    }
+
+    #temp-reviews {
+      width: 100%;
+      background-color: gray;
+    }
+
+    @media screen and (min-width: 1000px) {
+
+      #temp-photo {
+        order: -4;
+        width: 50%;
+      }
+
+      #temp-map {
+        order: -3;
+        width: 50%;
+      }
+
+      #temp-opening-times {
+        order: -2;
+        width: 50%;
+      }
+
+      #temp-address {
+        order: -2;
+        width: 50%;
+      }
+
+    }
+
+
+  </style>
+
+
+  <div id="temp-container">
+    <div id="temp-photo">2 - Photo</div>
+    <div id="temp-address">3 - Address</div>
+    <div id="temp-opening-times">4 - Opening Times<br/>Line 2</div>
+    <div id="temp-map">5 - Map</div>
+    <div id="temp-reviews">6 - Reviews</div>
+  </div>
+
+
+
   <!-- Beginning main -->
-  <main id="maincontent">
+  <main id="main-content">
+
+
+
+
+
+
     <!-- Beginning map -->
     <section id="map-container">
       <div id="map"></div>

@@ -17,6 +17,8 @@
   },
   "homepage": "https://github.com/JonUK/jk-mws-restaurant-stage-1#readme",
   "devDependencies": {
+    "grunt": "^1.0.2",
+    "grunt-cli": "^1.2.0",
     "grunt-responsive-images": "^1.10.1"
   }
 }

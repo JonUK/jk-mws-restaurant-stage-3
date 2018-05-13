@@ -150,7 +150,24 @@ class DBHelper {
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant) {
-    return (`/img/${restaurant.photograph}`);
+    return (`/img-export/${restaurant.photograph}`);
+  }
+
+  /**
+   * Get the image widths and URLs for all the sized versions of the restaurant image
+   * @param restaurant
+   * @returns {Array} - Array of objects with width and url properties
+   */
+  static allRestaurantImageSizesDetails(restaurant) {
+
+    const filenameWithoutExtension = restaurant.photograph.slice(0, -4); // We know extension is always (.jpg)
+    let allSizedImages = [];
+
+    allSizedImages.push({ width: 200, url: `/img-export/${filenameWithoutExtension}_200.jpg`});
+    allSizedImages.push({ width: 400, url: `/img-export/${filenameWithoutExtension}_400.jpg`});
+    allSizedImages.push({ width: 800, url: `/img-export/${restaurant.photograph}`}); // The original is 800px
+
+    return allSizedImages;
   }
 
   /**

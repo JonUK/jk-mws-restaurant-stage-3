@@ -268,14 +268,28 @@ nav h1 a:active {
   background-color: #ccc;
   display: block;
   margin: auto;
-  max-width: 70%;
-  min-width: 70%;
+  min-width: 200px;
+  max-width: 200px;
 }
 
-@media screen and (min-width: 450px) {
+@media screen and (min-width: 426px) {
   #restaurants-list .restaurant-img {
-    max-width: 100%;
     min-width: 100%;
+    max-width: 100%;
+  }
+}
+
+@media screen and (min-width: 490px) {
+  #restaurants-list .restaurant-img {
+    min-width: 400px;
+    max-width: 400px;
+  }
+}
+
+@media screen and (min-width: 680px) {
+  #restaurants-list .restaurant-img {
+    min-width: 100%;
+    max-width: 100%
   }
 }
 
@@ -295,19 +309,6 @@ nav h1 a:active {
   margin: 0;
   font-size: 11pt;
 }
-
-/*#restaurants-list li a {*/
-  /*background-color: orange;*/
-  /*border-bottom: 3px solid #eee;*/
-  /*color: #fff;*/
-  /*display: inline-block;*/
-  /*font-size: 10pt;*/
-  /*margin: 15px 0 0;*/
-  /*padding: 8px 30px 10px;*/
-  /*text-align: center;*/
-  /*text-decoration: none;*/
-  /*text-transform: uppercase;*/
-/*}*/
 
 /* ====================== Restaurant Details ====================== */
 .inside header {
@@ -397,7 +398,7 @@ nav h1 a:active {
 
 #reviews-list li {
   background-color: #fff;
-    border: 2px solid #f3f3f3;
+  border: 2px solid #f3f3f3;
   display: block;
   list-style-type: none;
   margin: 0 0 30px;

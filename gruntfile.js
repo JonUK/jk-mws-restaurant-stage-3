@@ -9,11 +9,11 @@ module.exports = function (grunt) {
                         quality: 90,
                         separator: "_"
                     },
-                        {
-                            width: 400,
-                            quality: 90,
-                            separator: "_"
-                        }]
+                    {
+                        width: 400,
+                        quality: 90,
+                        separator: "_"
+                    }]
                 },
                 files: [{
                     expand: true,

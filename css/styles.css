@@ -174,6 +174,16 @@ nav h1 a:active {
   background-color: #ccc;
 }
 
+#details-map {
+  height: 310px;
+  background-color: #ccc;
+}
+
+@media screen and (min-width: 426px) {
+  #details-map {
+    height: 620px;
+  }
+}
 
 
 
@@ -387,10 +397,23 @@ nav h1 a:active {
   padding: 10px 10px;
 }
 
+#details-map-container {
+  position: relative;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px 10px;
+}
+
+
 @media screen and (min-width: 1000px) {
 
   #restaurant-container {
     order: -4;
+    width: 50%;
+  }
+
+  #details-map-container {
+    order: -3;
     width: 50%;
   }
 
@@ -403,12 +426,6 @@ nav h1 a:active {
     order: -1;
     width: 50%;
   }
-}
-
-
-
-#reviews-container {
-  padding: 30px 40px 80px;
 }
 
 #reviews-container h2 {
@@ -431,9 +448,8 @@ nav h1 a:active {
   list-style-type: none;
   margin: 0 0 30px;
   overflow: hidden;
-  padding: 0 20px 20px;
+  padding: 10px 20px 20px;
   position: relative;
-  width: 85%;
 }
 
 #reviews-list li p {

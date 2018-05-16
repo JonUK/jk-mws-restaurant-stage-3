@@ -4,6 +4,7 @@
 <head>
 
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <!-- Normalize.css for better cross-browser consistency -->
   <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
@@ -118,8 +119,18 @@
       <h3>Opening Times</h3>
       <table id="restaurant-hours"></table>
     </div>
-    <div id="temp-map">5 - Map</div>
-    <div id="temp-reviews">6 - Reviews</div>
+
+    <!-- Beginning map -->
+    <section id="details-map-container">
+      <div id="details-map"></div>
+    </section>
+    <!-- End map -->
+
+    <!-- Beginning reviews -->
+    <section id="reviews-container">
+      <ul id="reviews-list"></ul>
+    </section>
+    <!-- End reviews -->
   </div>
 
 
@@ -132,17 +143,9 @@
 
 
 
-    <!-- Beginning map -->
-    <section id="map-container">
-      <div id="map"></div>
-    </section>
-    <!-- End map -->
 
-    <!-- Beginning reviews -->
-    <section id="reviews-container">
-      <ul id="reviews-list"></ul>
-    </section>
-    <!-- End reviews -->
+
+
   </main>
   <!-- End main -->
 

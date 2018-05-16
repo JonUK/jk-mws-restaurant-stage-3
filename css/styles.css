@@ -20,21 +20,24 @@ ul, li {
 	color: #333;
 }
 
-a {
-  color: #CC8500; /* WCAG AA for large text on a background of white and the gray #F3F3F3  */
-}
-
-a:hover, a:focus, a:active {
-  color: #3397db;
-}
-
 a img{
 	border: none 0 #fff;
 }
 
 h1, h2, h3, h4, h5, h6 {
+  color: #CC8500; /* WCAG AA for large text on a background of white and the gray #F3F3F3  */
   font-family: Arial, Helvetica, sans-serif;
-  margin: 0 0 20px;
+  margin: 0 0 5px;
+  text-transform: uppercase;
+}
+
+a:hover>h2, a:focus>h2, a:active>h2,
+a:hover>h3, a:focus>h3, a:active>h3 {
+  color: #3397db;
+}
+
+h3 {
+  font-size: 20px;
 }
 
 article, aside, canvas, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
@@ -131,12 +134,11 @@ nav h1 a:active {
 
 /* ====================== Navigation ====================== */
 #breadcrumb {
-    padding: 10px 40px 16px;
-    list-style: none;
-    background-color: #eee;
-    font-size: 17px;
-    margin: 0;
-
+  padding: 10px 15px 14px;
+  list-style: none;
+  background-color: #eee;
+  font-size: 17px;
+  margin: 0;
 }
 
 /* Display list items side by side */
@@ -153,8 +155,9 @@ nav h1 a:active {
 
 /* Add a color to all links inside the list */
 #breadcrumb li a {
-    color: #0275d8;
-    text-decoration: none;
+  color: #0275d8;
+  text-decoration: none;
+  padding: 10px 10px; /* Make the tap target larger */
 }
 
 /* Add a color on mouse-over */
@@ -198,11 +201,9 @@ nav h1 a:active {
 }
 
 .filter-options h2 {
-
+  color: white;
   font-size: 1.25em;
-  font-weight: normal;
-  line-height: 1;
-  margin: 0 0 10px 0;
+  text-transform: none;
 }
 
 .filter-option-wrapper {
@@ -268,7 +269,7 @@ nav h1 a:active {
   background-color: #fff;
   border: 2px solid #ccc;
   font-family: Arial,sans-serif;
-  margin: 0px;
+  margin: 0;
   padding: 0 15px 25px;
   text-align: left;
 }
@@ -304,14 +305,9 @@ nav h1 a:active {
 
 #restaurants-list li h2 {
   display: inline-block;
-  font-family: Arial, sans-serif;
-  font-size: 14pt;
-  font-weight: 200;
-  letter-spacing: 0;
-  line-height: 1.3;
-  margin: 5px 0 0;
+  text-decoration: underline;
   padding: 10px 0 10px; /* Padding in place so tap target is larger */
-  text-transform: uppercase;
+  margin: 0;
 }
 
 #restaurants-list p {
@@ -320,6 +316,7 @@ nav h1 a:active {
 }
 
 /* ====================== Restaurant Details ====================== */
+
 #details-content {
   display: flex;
   flex-wrap: wrap;
@@ -328,15 +325,22 @@ nav h1 a:active {
   margin: 0 auto;
 }
 
+#breadcrumb-container {
+  order: -5;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0 10px;
+}
+
 #restaurant-name {
-  color: #f18200;
-  font-family: Arial,sans-serif;
-  font-size: 20pt;
-  font-weight: 200;
-  letter-spacing: 0;
-  margin: 15px 0 30px;
-  text-transform: uppercase;
-  line-height: 1.1;
+  /*color: #f18200;*/
+  /*font-family: Arial,sans-serif;*/
+  /*font-size: 20pt;*/
+  /*font-weight: 200;*/
+  /*letter-spacing: 0;*/
+  /*margin: 15px 0 30px;*/
+  /*text-transform: uppercase;*/
+  /*line-height: 1.1;*/
 }
 
 #restaurant-img {
@@ -405,13 +409,13 @@ nav h1 a:active {
   }
 }
 
-#reviews-container h2 {
-  color: #f58500;
-  font-size: 24pt;
-  font-weight: 300;
-  letter-spacing: -1px;
-  padding-bottom: 1pt;
-}
+/*#reviews-container h2 {*/
+  /*color: #f58500;*/
+  /*!*font-size: 24pt;*!*/
+  /*font-weight: 300;*/
+  /*letter-spacing: -1px;*/
+  /*padding-bottom: 1pt;*/
+/*}*/
 
 #reviews-list {
   margin: 0;

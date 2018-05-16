@@ -58,6 +58,10 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   width: 100%
 }
 
+#filter-and-results-wrapper select:focus {
+  outline: 3px solid #333333;
+}
+
 #home-map-container {
   width: 100%
 }

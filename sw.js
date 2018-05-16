@@ -28,51 +28,53 @@ self.addEventListener('install', function(event) {
 
 
 self.addEventListener('fetch', function(event) {
+
+  let requestUrl = new URL(event.request.url);
+
+  //console.log(requestUrl);
+
+  if (requestUrl.pathname === '/data/restaurants.json') {
+    returnFromNetworkFallingBackToCache(event, requestUrl);
+  // } else if (requestUrl.pathname === '/restaurant.html') {
+  //
+  //   console.log('restaurant.html');
+  //
+  //   event.respondWith(caches.match('/restaurant.html'));
+  } else {
+    returnFromCacheFallingBackToNetwork(event);
+  }
+
+});
+
+
+function returnFromCacheFallingBackToNetwork(event) {
+
   event.respondWith(
-    // This method looks at the request and
-    // finds any cached results from any of the
-    // caches that the Service Worker has created.
+
+    // Try and find any cached results from any of the service worker caches
     caches.match(event.request)
       .then(function(response) {
-        // If a cache is hit, we can return the response.
+
+        // If a cache is hit, we can return the response else get from the network
         if (response) {
           return response;
         }
 
-        // Clone the request. A request is a stream and
-        // can only be consumed once. Since we are consuming this
-        // once by cache and once by the browser for fetch, we need
-        // to clone the request.
-        var fetchRequest = event.request.clone();
-
-        // A cache hasn't been hit so we need to perform a fetch,
-        // which makes a network request and returns the data if
-        // anything can be retrieved from the network.
-        return fetch(fetchRequest).then(
-          function(response) {
-            // Check if we received a valid response
-            if(!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
-            }
-
-            // Cloning the response since it's a stream as well.
-            // Because we want the browser to consume the response
-            // as well as the cache consuming the response, we need
-            // to clone it so we have two streams.
-            var responseToCache = response.clone();
-
-            caches.open(OFFLINE_CACHE)
-              .then(function(cache) {
-                // Add the request to the cache for future queries.
-                cache.put(event.request, responseToCache);
-              });
-
-            return response;
-          }
-        );
+        return fetch(event.request);
       })
   );
-});
+}
+
+function returnFromNetworkFallingBackToCache(event, requestUrl) {
+
+  console.log('Get from network falling back to cache', requestUrl.href);
+
+  event.respondWith(
+    fetch(event.request).catch(function() {
+      return caches.match(event.request);
+    })
+  );
+}
 
 
 // self.addEventListener('fetch', function(event) {

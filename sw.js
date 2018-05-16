@@ -1,5 +1,4 @@
 
-
 const OFFLINE_CACHE = 'restaurant-cache-v1';
 
 const urlsToCache = [
@@ -10,7 +9,6 @@ const urlsToCache = [
   '/',
   '/restaurant.html',
   '/css/styles.css',
-
   '/js/dbhelper.js',
   '/js/main.js',
   '/js/restaurant_info.js',
@@ -31,18 +29,15 @@ self.addEventListener('fetch', function(event) {
 
   let requestUrl = new URL(event.request.url);
 
-  //console.log(requestUrl);
-
   if (requestUrl.pathname === '/data/restaurants.json') {
-    returnFromNetworkFallingBackToCache(event, requestUrl);
-  // } else if (requestUrl.pathname === '/restaurant.html') {
-  //
-  //   console.log('restaurant.html');
-  //
-  //   event.respondWith(caches.match('/restaurant.html'));
+    returnFromNetworkFallingBackToCache(event, requestUrl); // Want the data as current as possible
   } else {
     returnFromCacheFallingBackToNetwork(event);
   }
+
+  // As there are currently only 9 restaurants registered, we could add the restaurant images to the
+  // cache each time one is retrieved from the network. Assuming there are more restaurants added in
+  // future though, this will be too much data. We will therefore rely on the standard browser cache.
 
 });
 
@@ -52,7 +47,7 @@ function returnFromCacheFallingBackToNetwork(event) {
   event.respondWith(
 
     // Try and find any cached results from any of the service worker caches
-    caches.match(event.request)
+    caches.match(event.request, { ignoreSearch: true }) // We can safely ignore query strings
       .then(function(response) {
 
         // If a cache is hit, we can return the response else get from the network
@@ -71,89 +66,7 @@ function returnFromNetworkFallingBackToCache(event, requestUrl) {
 
   event.respondWith(
     fetch(event.request).catch(function() {
-      return caches.match(event.request);
+      return caches.match(event.request, { ignoreSearch: true }); // We can safely ignore query strings
     })
   );
 }
-
-
-// self.addEventListener('fetch', function(event) {
-//
-//
-//   //debugger;
-//
-//   // Let the browser directly handle any requests that aren't a GET
-//   if (event.request.method != 'GET'){
-//     return;
-//   }
-//
-//   return caches.open(OFFLINE_CACHE).then(function(cache) {
-//
-//     return cache.match(event.request).then((response) => {
-//
-//       debugger;
-//
-//       if(response) {
-//         console.log('Take from cache: ' + event.request.url);
-//         return response;
-//       }
-//
-//       return fetch(event.request).then((response)=>{
-//         if(response.status == 404) {
-//           return new Response("Not found!");
-//         }
-//         return response;
-//       }).catch((err)=>{
-//         console.log(`Caching failed! Error: ${err}`);
-//       })
-//     });
-//   });
-//
-//
-//
-//
-//
-//   //returnFromCacheFallingBackToNetwork(event);
-//
-//   // if (event.request.url.endsWith('/data/restaurants.json')) {
-//   //
-//   //   //debugger;
-//   //   returnFromNetworkFallingBackToCache(event);
-//   //
-//   // } else {
-//   //   returnFromCacheFallingBackToNetwork(event);
-//   // }
-//
-//   // self.addEventListener('fetch', function(event) {
-//   //   event.respondWith(
-//   //     caches.match(event.request).then(function(response) {
-//   //       return response || fetch(event.request);
-//   //     })
-//   //   );
-//   // });
-//   //
-//   // console.log(event.request.url);
-//   // event.respondWith(fetch(event.request));
-// });
-//
-// function returnFromNetworkFallingBackToCache(event) {
-//   event.respondWith(
-//     fetch(event.request).catch(function() {
-//       return caches.match(event.request);
-//     })
-//   );
-// }
-//
-//
-// function returnFromCacheFallingBackToNetwork(event) {
-//   self.addEventListener('fetch', function(event) {
-//     event.respondWith(
-//       caches.match(event.request).then(function(response) {
-//         return response || fetch(event.request);
-//       })
-//     );
-//   });
-// }
-//
-//
-//

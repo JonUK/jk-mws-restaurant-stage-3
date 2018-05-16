@@ -53,7 +53,10 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   name.innerHTML = restaurant.name;
 
   const address = document.getElementById('restaurant-address');
-  address.innerHTML = restaurant.address;
+  const title = document.createElement('h3');
+  title.innerHTML = 'Address';
+  address.appendChild(title);
+  address.appendChild(document.createTextNode(restaurant.address));
 
   const image = document.getElementById('restaurant-img');
   image.className = 'restaurant-img';

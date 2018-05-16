@@ -24,13 +24,12 @@ self.addEventListener('install', function(event) {
   );
 });
 
-
 self.addEventListener('fetch', function(event) {
 
   let requestUrl = new URL(event.request.url);
 
   if (requestUrl.pathname === '/data/restaurants.json') {
-    returnFromNetworkFallingBackToCache(event, requestUrl); // Want the data as current as possible
+    returnFromNetworkFallingBackToCache(event, requestUrl); // Want the data to be as current as possible
   } else {
     returnFromCacheFallingBackToNetwork(event);
   }

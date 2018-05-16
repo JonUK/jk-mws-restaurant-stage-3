@@ -21,7 +21,7 @@ ul, li {
 }
 
 a {
-  color: #A36A00;
+  color: #CC8500; /* WCAG AA for large text on a background of white and the gray #F3F3F3  */
 }
 
 a:hover, a:focus, a:active {

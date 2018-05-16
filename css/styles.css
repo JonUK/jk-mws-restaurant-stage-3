@@ -55,12 +55,12 @@ article, aside, canvas, details, figcaption, figure, footer, header, hgroup, men
   width: 100%
 }
 
-#map-container {
+#home-map-container {
   width: 100%
 }
 
 @media screen and (min-width: 781px) {
-  #map-container {
+  #home-map-container {
     order: -1;
   }
 }
@@ -168,7 +168,7 @@ nav h1 a:active {
 
 
 /* ====================== Map ====================== */
-#map {
+#home-map {
   height: 350px;
   width: 100%;
   background-color: #ccc;

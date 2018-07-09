@@ -5,11 +5,11 @@ class DBHelper {
 
   /**
    * Database URL.
-   * Change this to restaurants.json file location on your server.
+   * Change this to the restaurants JSON file on your server.
    */
   static get DATABASE_URL() {
-    const port = 8000; // Change this to your server port
-    return `http://localhost:${port}/data/restaurants.json`;
+    const port = 1337; // Change this to your server port
+    return `http://localhost:${port}/restaurants`;
   }
 
   /**
@@ -20,8 +20,7 @@ class DBHelper {
     xhr.open('GET', DBHelper.DATABASE_URL);
     xhr.onload = () => {
       if (xhr.status === 200) { // Got a success response from server!
-        const json = JSON.parse(xhr.responseText);
-        const restaurants = json.restaurants;
+        const restaurants = JSON.parse(xhr.responseText);
         callback(null, restaurants);
       } else { // Oops!. Got an error from server.
         const error = (`Request failed. Returned status of ${xhr.status}`);
@@ -150,7 +149,7 @@ class DBHelper {
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant) {
-    return (`/img-export/${restaurant.photograph}`);
+    return (`/img-export/${restaurant.photograph}.jpg`);
   }
 
   /**
@@ -160,12 +159,12 @@ class DBHelper {
    */
   static allRestaurantImageSizesDetails(restaurant) {
 
-    const filenameWithoutExtension = restaurant.photograph.slice(0, -4); // We know extension is always (.jpg)
+    const filenameWithoutExtension = restaurant.id;
     let allSizedImages = [];
 
     allSizedImages.push({ width: 200, url: `/img-export/${filenameWithoutExtension}_200.jpg`});
     allSizedImages.push({ width: 400, url: `/img-export/${filenameWithoutExtension}_400.jpg`});
-    allSizedImages.push({ width: 800, url: `/img-export/${restaurant.photograph}`}); // The original is 800px
+    allSizedImages.push({ width: 800, url: `/img-export/${filenameWithoutExtension}.jpg`}); // The original is 800px
 
     return allSizedImages;
   }

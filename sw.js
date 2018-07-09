@@ -1,4 +1,6 @@
 
+importScripts('/js/idb.js');
+
 const OFFLINE_CACHE_NAME = 'restaurant-cache-v4';
 
 const urlsToCache = [
@@ -15,6 +17,10 @@ const urlsToCache = [
   '/js/sw_register.js',
   '/js/idb.js'
 ];
+
+var dbPromise = idb.open('restaurant-reviews-db', 1, (upgradeDb) => {
+  upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
+});
 
 self.addEventListener('install', function(event) {
   event.waitUntil(

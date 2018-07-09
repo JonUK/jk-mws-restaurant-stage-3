@@ -1,5 +1,5 @@
 
-const OFFLINE_CACHE = 'restaurant-cache-v1';
+const OFFLINE_CACHE_NAME = 'restaurant-cache-v4';
 
 const urlsToCache = [
   // Network falling back to the cache
@@ -12,16 +12,34 @@ const urlsToCache = [
   '/js/dbhelper.js',
   '/js/main.js',
   '/js/restaurant_info.js',
-  '/js/sw_register.js'
+  '/js/sw_register.js',
+  '/js/idb.js'
 ];
 
 self.addEventListener('install', function(event) {
   event.waitUntil(
-    caches.open(OFFLINE_CACHE)
+    caches.open(OFFLINE_CACHE_NAME)
       .then(function(cache) {
         return cache.addAll(urlsToCache);
       })
   );
+});
+
+self.addEventListener('activate', function(event) {
+
+  event.waitUntil(
+    caches.keys()
+      .then(function (keyList) {
+        return Promise.all(keyList.map((key) => {
+
+          if (key !== OFFLINE_CACHE_NAME) {
+            console.log('Removing old cache', key);
+            return caches.delete(key);
+          }
+
+        }))
+      })
+  )
 });
 
 self.addEventListener('fetch', function(event) {

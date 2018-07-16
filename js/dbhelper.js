@@ -16,6 +16,14 @@ class DBHelper {
    * Fetch all restaurants.
    */
   static fetchRestaurants(callback) {
+
+    // TODO: Swap from using an XHR request to using the fetch API
+    // TODO: Try and get all the restaurants from the IndexDB and if they don't exist then use the fetch API
+    // TODO: Possibly think about this method exposing a Promise rather than having callback
+    // TODO: After fetching the restaurants JSON then store in the IndexDB
+
+    // TODO: Review what caching strategy to use. Always use cache but still fetch and update cache after?
+
     let xhr = new XMLHttpRequest();
     xhr.open('GET', DBHelper.DATABASE_URL);
     xhr.onload = () => {

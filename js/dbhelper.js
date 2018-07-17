@@ -1,6 +1,6 @@
 /**
  * Variable to hold a promise for the restaurant data that can be reused across
- * different calls to get the restaurant data.
+ * different function calls to get the restaurant data.
  */
 let restaurantsPromise;
 
@@ -19,7 +19,7 @@ class DBHelper {
   }
 
   /**
-   * Get an instance of the index DB promise for the database
+   * Get an instance of the indexedDB promise for the database
    */
   static openDatabase() {
     return idb.open('restaurant-db', 1, (upgradeDb) => {

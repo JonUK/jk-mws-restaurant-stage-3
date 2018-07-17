@@ -1,6 +1,4 @@
 
-importScripts('/js/idb.js');
-
 const OFFLINE_CACHE_NAME = 'restaurant-cache-v4';
 
 const urlsToCache = [
@@ -17,10 +15,6 @@ const urlsToCache = [
   '/js/sw_register.js',
   '/js/idb.js'
 ];
-
-var dbPromise = idb.open('restaurant-reviews-db', 1, (upgradeDb) => {
-  upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
-});
 
 self.addEventListener('install', function(event) {
   event.waitUntil(
@@ -50,20 +44,13 @@ self.addEventListener('activate', function(event) {
 
 self.addEventListener('fetch', function(event) {
 
-  let requestUrl = new URL(event.request.url);
-
-  if (requestUrl.pathname === '/data/restaurants.json') {
-    returnFromNetworkFallingBackToCache(event, requestUrl); // Want the data to be as current as possible
-  } else {
-    returnFromCacheFallingBackToNetwork(event);
-  }
+  returnFromCacheFallingBackToNetwork(event);
 
   // As there are currently only 9 restaurants registered, we could add the restaurant images to the
   // cache each time one is retrieved from the network. Assuming there are more restaurants added in
   // future though, this will be too much data. We will therefore rely on the standard browser cache.
 
 });
-
 
 function returnFromCacheFallingBackToNetwork(event) {
 
@@ -80,16 +67,5 @@ function returnFromCacheFallingBackToNetwork(event) {
 
         return fetch(event.request);
       })
-  );
-}
-
-function returnFromNetworkFallingBackToCache(event, requestUrl) {
-
-  console.log('Get from network falling back to cache', requestUrl.href);
-
-  event.respondWith(
-    fetch(event.request).catch(function() {
-      return caches.match(event.request, { ignoreSearch: true }); // We can safely ignore query strings
-    })
   );
 }

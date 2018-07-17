@@ -1,3 +1,4 @@
+
 /**
  * Common database helper functions.
  */
@@ -13,51 +14,92 @@ class DBHelper {
   }
 
   /**
+   * Get an instance of the index DB promise for the database
+   */
+  static openDatabase() {
+    return idb.open('restaurant-db', 1, (upgradeDb) => {
+
+      if (!upgradeDb.objectStoreNames.contains('restaurants')) {
+        upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
+      }
+
+    });
+  }
+
+  static getRestaurantsFromCache() {
+    return DBHelper.openDatabase()
+      .then((db) => {
+        let transaction = db.transaction('restaurants', 'readonly');
+        let store = transaction.objectStore('restaurants');
+        return store.getAll();
+      });
+  }
+
+  static addRestaurantsToCache(restaurants) {
+    return DBHelper.openDatabase()
+      .then((db) => {
+        let transaction = db.transaction('restaurants', 'readwrite');
+        let store = transaction.objectStore('restaurants');
+        restaurants.forEach(restaurant => store.put(restaurant));
+      });
+  }
+
+  /**
    * Fetch all restaurants.
    */
-  static fetchRestaurants(callback) {
+  static getRestaurants(callback) {
 
-    //debugger;
+    DBHelper.getRestaurantsFromCache()
+      .then((restaurants) => {
 
-    // TODO: Think about using a polyfill for the fetch API so we don't exclude old browsers (IE anyone?!)
-    // TODO: Create a class level variable to hold the promise for all the resturants.
+        let restaurantsInCache = restaurants.length > 0;
 
-    fetch(DBHelper.DATABASE_URL)
-      .then((response) => {
-
-        if (response.status === 200) { // We have the data!
-          response.json().then(function(restaurants) {
-            callback(null, restaurants);
-          });
-        } else { // Oh no... Houston we have a problem.
-          const error = (`Request failed. Returned status of ${response.status}`);
-          callback(error, null);
+        // If the restaurants were in the cache then return them before fetching from the
+        // network. After we fetch from the network we will update the cache.
+        if (restaurantsInCache) {
+          callback(null, restaurants);
         }
 
-      }).catch((err) => {
-        const error = (`An error occurred. Error: ${err}`);
-        callback(error, null);
+        fetch(DBHelper.DATABASE_URL)
+          .then((response) => {
+
+            if (response.status === 200) {
+              response.json().then(function(restaurants) {
+
+                DBHelper.addRestaurantsToCache(restaurants); // Ensure the restaurants always updated
+
+                if (!restaurantsInCache) { // If restaurants weren't returned from cache, return them now
+                  callback(null, restaurants);
+                }
+
+              });
+            } else { // Oh no... Houston we have a problem.
+
+              if (restaurantsInCache) { // If restaurants were returned from cache, ignore server error
+                return;
+              }
+
+              const error = (`Request failed. Returned status of ${response.status}`);
+              callback(error, null);
+            }
+
+          }).catch((err) => {
+
+            if (restaurantsInCache) { // If restaurants were returned from cache, ignore error
+              return;
+            }
+
+            const error = (`An error occurred. Error: ${err}`);
+            callback(error, null);
+        });
       });
 
-    // TODO: Swap from using an XHR request to using the fetch API
-    // TODO: Try and get all the restaurants from the IndexDB and if they don't exist then use the fetch API
+    // TODO: Multiple HTTP requests are made to the server so think about mitigating this
+    // TODO: Think about using a polyfill for the fetch API so we don't exclude old browsers (IE anyone?!)
+    // TODO: Think about using a polyfill for Promise support
+    // TODO: Create a class level variable to hold the promise for all the resturants.
+
     // TODO: Possibly think about this method exposing a Promise rather than having callback
-    // TODO: After fetching the restaurants JSON then store in the IndexDB
-
-    // TODO: Review what caching strategy to use. Always use cache but still fetch and update cache after?
-
-    // let xhr = new XMLHttpRequest();
-    // xhr.open('GET', DBHelper.DATABASE_URL);
-    // xhr.onload = () => {
-    //   if (xhr.status === 200) { // Got a success response from server!
-    //     const restaurants = JSON.parse(xhr.responseText);
-    //     callback(null, restaurants);
-    //   } else { // Oops!. Got an error from server.
-    //     const error = (`Request failed. Returned status of ${xhr.status}`);
-    //     callback(error, null);
-    //   }
-    // };
-    // xhr.send();
   }
 
   /**
@@ -65,7 +107,7 @@ class DBHelper {
    */
   static fetchRestaurantById(id, callback) {
     // fetch all restaurants with proper error handling.
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    DBHelper.getRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null);
       } else {
@@ -84,7 +126,7 @@ class DBHelper {
    */
   static fetchRestaurantByCuisine(cuisine, callback) {
     // Fetch all restaurants  with proper error handling
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    DBHelper.getRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null);
       } else {
@@ -100,7 +142,7 @@ class DBHelper {
    */
   static fetchRestaurantByNeighborhood(neighborhood, callback) {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    DBHelper.getRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null);
       } else {
@@ -116,7 +158,7 @@ class DBHelper {
    */
   static fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, callback) {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    DBHelper.getRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null);
       } else {
@@ -137,7 +179,7 @@ class DBHelper {
    */
   static fetchNeighborhoods(callback) {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    DBHelper.getRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null);
       } else {
@@ -155,7 +197,7 @@ class DBHelper {
    */
   static fetchCuisines(callback) {
     // Fetch all restaurants
-    DBHelper.fetchRestaurants((error, restaurants) => {
+    DBHelper.getRestaurants((error, restaurants) => {
       if (error) {
         callback(error, null);
       } else {

@@ -17,6 +17,28 @@ class DBHelper {
    */
   static fetchRestaurants(callback) {
 
+    //debugger;
+
+    // TODO: Think about using a polyfill for the fetch API so we don't exclude old browsers (IE anyone?!)
+    // TODO: Create a class level variable to hold the promise for all the resturants.
+
+    fetch(DBHelper.DATABASE_URL)
+      .then((response) => {
+
+        if (response.status === 200) { // We have the data!
+          response.json().then(function(restaurants) {
+            callback(null, restaurants);
+          });
+        } else { // Oh no... Houston we have a problem.
+          const error = (`Request failed. Returned status of ${response.status}`);
+          callback(error, null);
+        }
+
+      }).catch((err) => {
+        const error = (`An error occurred. Error: ${err}`);
+        callback(error, null);
+      });
+
     // TODO: Swap from using an XHR request to using the fetch API
     // TODO: Try and get all the restaurants from the IndexDB and if they don't exist then use the fetch API
     // TODO: Possibly think about this method exposing a Promise rather than having callback
@@ -24,18 +46,18 @@ class DBHelper {
 
     // TODO: Review what caching strategy to use. Always use cache but still fetch and update cache after?
 
-    let xhr = new XMLHttpRequest();
-    xhr.open('GET', DBHelper.DATABASE_URL);
-    xhr.onload = () => {
-      if (xhr.status === 200) { // Got a success response from server!
-        const restaurants = JSON.parse(xhr.responseText);
-        callback(null, restaurants);
-      } else { // Oops!. Got an error from server.
-        const error = (`Request failed. Returned status of ${xhr.status}`);
-        callback(error, null);
-      }
-    };
-    xhr.send();
+    // let xhr = new XMLHttpRequest();
+    // xhr.open('GET', DBHelper.DATABASE_URL);
+    // xhr.onload = () => {
+    //   if (xhr.status === 200) { // Got a success response from server!
+    //     const restaurants = JSON.parse(xhr.responseText);
+    //     callback(null, restaurants);
+    //   } else { // Oops!. Got an error from server.
+    //     const error = (`Request failed. Returned status of ${xhr.status}`);
+    //     callback(error, null);
+    //   }
+    // };
+    // xhr.send();
   }
 
   /**

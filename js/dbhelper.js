@@ -1,3 +1,8 @@
+/**
+ * Variable to hold a promise for the restaurant data that can be reused across
+ * different calls to get the restaurant data.
+ */
+let restaurantsPromise;
 
 /**
  * Common database helper functions.
@@ -5,10 +10,10 @@
 class DBHelper {
 
   /**
-   * Database URL.
-   * Change this to the restaurants JSON file on your server.
+   * Server URL.
+   * Change this to the restaurants JSON on your server.
    */
-  static get DATABASE_URL() {
+  static get SERVER_URL() {
     const port = 1337; // Change this to your server port
     return `http://localhost:${port}/restaurants`;
   }
@@ -20,7 +25,7 @@ class DBHelper {
     return idb.open('restaurant-db', 1, (upgradeDb) => {
 
       if (!upgradeDb.objectStoreNames.contains('restaurants')) {
-        upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
+        upgradeDb.createObjectStore('restaurants', {keyPath: 'id'});
       }
 
     });
@@ -45,61 +50,78 @@ class DBHelper {
   }
 
   /**
-   * Fetch all restaurants.
+   * Get all restaurants.
    */
   static getRestaurants(callback) {
 
-    DBHelper.getRestaurantsFromCache()
-      .then((restaurants) => {
+    DBHelper.getRestaurantsPromise()
+      .then((restaurants) => { callback(null, restaurants) })
+      .catch((error) => { callback(error, null) });
+  }
 
-        let restaurantsInCache = restaurants.length > 0;
+  /**
+   * Get a promise for all the restaurants. Will attempt to retrieve from cache first.
+   * Will always fetch from the server and update the cache.
+   * @returns {Promise}
+   */
+  static getRestaurantsPromise() {
 
-        // If the restaurants were in the cache then return them before fetching from the
-        // network. After we fetch from the network we will update the cache.
-        if (restaurantsInCache) {
-          callback(null, restaurants);
-        }
+    // If the promise to get the restaurants already exists then reuse it. In doing so
+    // we ensure that the data is only retrieved from the cache and the server once
+    // regardless of the number of function calls made.
+    if (restaurantsPromise) {
+      return restaurantsPromise;
+    }
 
-        fetch(DBHelper.DATABASE_URL)
-          .then((response) => {
+    restaurantsPromise = new Promise(function (resolve, reject) {
 
-            if (response.status === 200) {
-              response.json().then(function(restaurants) {
+      DBHelper.getRestaurantsFromCache()
+        .then((restaurants) => {
 
-                DBHelper.addRestaurantsToCache(restaurants); // Ensure the restaurants always updated
+          let restaurantsInCache = restaurants.length > 0;
 
-                if (!restaurantsInCache) { // If restaurants weren't returned from cache, return them now
-                  callback(null, restaurants);
+          // If the restaurants were in the cache then return them before fetching from the
+          // server. After we fetch from the server we will update the cache.
+          if (restaurantsInCache) {
+            resolve(restaurants);
+          }
+
+          fetch(DBHelper.SERVER_URL)
+            .then((response) => {
+
+              if (response.status === 200) {
+                response.json().then(function (restaurants) {
+
+                  DBHelper.addRestaurantsToCache(restaurants); // Ensure the restaurants cache is always updated
+
+                  if (!restaurantsInCache) { // If restaurants weren't returned from cache, return them now
+                    resolve(restaurants);
+                  }
+
+                });
+              } else { // Oh no... Houston we have a problem.
+
+                if (restaurantsInCache) { // If restaurants were returned from cache, ignore server error
+                  return;
                 }
 
-              });
-            } else { // Oh no... Houston we have a problem.
+                const error = (`Request failed. Returned status of ${response.status}`);
+                reject(error);
+              }
 
-              if (restaurantsInCache) { // If restaurants were returned from cache, ignore server error
+            }).catch((err) => {
+
+              if (restaurantsInCache) { // If restaurants were returned from cache, ignore error
                 return;
               }
 
-              const error = (`Request failed. Returned status of ${response.status}`);
-              callback(error, null);
-            }
-
-          }).catch((err) => {
-
-            if (restaurantsInCache) { // If restaurants were returned from cache, ignore error
-              return;
-            }
-
-            const error = (`An error occurred. Error: ${err}`);
-            callback(error, null);
+              const error = (`An error occurred. Error: ${err}`);
+              reject(error);
+          });
         });
-      });
+    });
 
-    // TODO: Multiple HTTP requests are made to the server so think about mitigating this
-    // TODO: Think about using a polyfill for the fetch API so we don't exclude old browsers (IE anyone?!)
-    // TODO: Think about using a polyfill for Promise support
-    // TODO: Create a class level variable to hold the promise for all the resturants.
-
-    // TODO: Possibly think about this method exposing a Promise rather than having callback
+    return restaurantsPromise;
   }
 
   /**
@@ -234,9 +256,9 @@ class DBHelper {
     const filenameWithoutExtension = restaurant.id;
     let allSizedImages = [];
 
-    allSizedImages.push({ width: 200, url: `/img-export/${filenameWithoutExtension}_200.jpg`});
-    allSizedImages.push({ width: 400, url: `/img-export/${filenameWithoutExtension}_400.jpg`});
-    allSizedImages.push({ width: 800, url: `/img-export/${filenameWithoutExtension}.jpg`}); // The original is 800px
+    allSizedImages.push({width: 200, url: `/img-export/${filenameWithoutExtension}_200.jpg`});
+    allSizedImages.push({width: 400, url: `/img-export/${filenameWithoutExtension}_400.jpg`});
+    allSizedImages.push({width: 800, url: `/img-export/${filenameWithoutExtension}.jpg`}); // The original is 800px
 
     return allSizedImages;
   }
@@ -246,11 +268,12 @@ class DBHelper {
    */
   static mapMarkerForRestaurant(restaurant, map) {
     const marker = new google.maps.Marker({
-      position: restaurant.latlng,
-      title: restaurant.name,
-      url: DBHelper.urlForRestaurant(restaurant),
-      map: map,
-      animation: google.maps.Animation.DROP}
+        position: restaurant.latlng,
+        title: restaurant.name,
+        url: DBHelper.urlForRestaurant(restaurant),
+        map: map,
+        animation: google.maps.Animation.DROP
+      }
     );
     return marker;
   }

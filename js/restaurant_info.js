@@ -87,6 +87,16 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
   image.alt = restaurant.name;
 
+  image.addEventListener('load', function () {
+
+    if (typeof L === 'undefined') {
+      return; // If the Leaflet library has not been loaded / offline the use the map
+    }
+
+    // Once the image has loaded, we then know the space available for the map so re-evaluate the size
+    map.invalidateSize();
+  });
+
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
 

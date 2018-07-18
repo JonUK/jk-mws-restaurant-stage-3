@@ -55,8 +55,12 @@ class DBHelper {
   static getRestaurants(callback) {
 
     DBHelper.getRestaurantsPromise()
-      .then((restaurants) => { callback(null, restaurants) })
-      .catch((error) => { callback(error, null) });
+      .then((restaurants) => {
+        callback(null, restaurants)
+      })
+      .catch((error) => {
+        callback(error, null)
+      });
   }
 
   /**
@@ -111,12 +115,12 @@ class DBHelper {
 
             }).catch((err) => {
 
-              if (restaurantsInCache) { // If restaurants were returned from cache, ignore error
-                return;
-              }
+            if (restaurantsInCache) { // If restaurants were returned from cache, ignore error
+              return;
+            }
 
-              const error = (`An error occurred. Error: ${err}`);
-              reject(error);
+            const error = (`An error occurred. Error: ${err}`);
+            reject(error);
           });
         });
     });
@@ -236,7 +240,7 @@ class DBHelper {
    * Restaurant page URL.
    */
   static urlForRestaurant(restaurant) {
-    return (`./restaurant.html?id=${restaurant.id}`);
+    return (`./restaurant?id=${restaurant.id}`);
   }
 
   /**
@@ -274,15 +278,14 @@ class DBHelper {
    * Map marker for a restaurant.
    */
   static mapMarkerForRestaurant(restaurant, map) {
-    const marker = new google.maps.Marker({
-        position: restaurant.latlng,
+    let marker = new L.marker([restaurant.latlng.lat, restaurant.latlng.lng],
+      {
         title: restaurant.name,
-        url: DBHelper.urlForRestaurant(restaurant),
-        map: map,
-        animation: google.maps.Animation.DROP
-      }
-    );
+        alt: restaurant.name,
+        url: DBHelper.urlForRestaurant(restaurant)
+      });
+    marker.addTo(map);
+
     return marker;
   }
-
 }

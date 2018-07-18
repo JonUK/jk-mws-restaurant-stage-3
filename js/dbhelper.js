@@ -240,10 +240,17 @@ class DBHelper {
   }
 
   /**
+   * Restaurant lightweight placehold image URL.
+   */
+  static imagePlaceholderUrlForRestaurant(restaurant) {
+    return (`/img-export/${restaurant.id}_placeholder.jpg`);
+  }
+
+  /**
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant) {
-    return (`/img-export/${restaurant.photograph}.jpg`);
+    return (`/img-export/${restaurant.id}.jpg`);
   }
 
   /**

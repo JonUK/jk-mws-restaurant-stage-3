@@ -142,12 +142,14 @@ createRestaurantHTML = (restaurant) => {
   image.className = 'restaurant-img';
   image.alt = restaurant.name;
 
-  image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  image.src = DBHelper.imagePlaceholderUrlForRestaurant(restaurant);
+  image.setAttribute("data-src", DBHelper.imageUrlForRestaurant(restaurant))
 
   let allImagesSizes = DBHelper.allRestaurantImageSizesDetails(restaurant);
   let srcsetValues = allImagesSizes.map(x => `${x.url} ${x.width.toString()}w`);
   let srcset = srcsetValues.join(', ');
-  image.srcset = srcset;
+
+  image.setAttribute("data-srcset", srcset);
   image.sizes = "(max-width: 425px) 200px, (min-width: 426px) 400px";
 
   li.append(image);

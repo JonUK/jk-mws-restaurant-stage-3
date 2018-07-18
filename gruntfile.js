@@ -4,11 +4,12 @@ module.exports = function (grunt) {
     responsive_images: {
       dev: {
         options: {
+          newFilesOnly: false,
           sizes: [
             {
               name: 'placeholder',
-              width: 100,
-              quality: 20,
+              width: 150,
+              quality: 40,
               separator: "_"
             },
             {

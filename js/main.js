@@ -204,6 +204,9 @@ addMarkersToMap = (restaurants = self.restaurants) => {
 
 initLazyLoad = () => {
 
+  // Lazy image loading technique as described here:
+  // https://developers.google.com/web/fundamentals/performance/lazy-loading-guidance/images-and-video/
+
   let lazyImages = [].slice.call(document.querySelectorAll("img.lazy"));
 
   if ("IntersectionObserver" in window) {

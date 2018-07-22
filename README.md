@@ -12,8 +12,8 @@ You have been provided the code for a restaurant reviews website. The code has a
 
 ### What do I do from here?
 
-1. This project makes use of the [serve npm package](https://www.npmjs.com/package/serve)  which needs to be installed globally with `npm i -g serve`.
-2. Start the server with `serve -p 8000`
+1. This project makes use of the [express npm package](https://www.npmjs.com/package/express) which needs to be installed with `npm install express`.
+2. Start the server with `node express`
 3. With your server running, visit the site: [http://localhost:8000](http://localhost:8000), and look around for a bit to see what the current experience looks like.  
 4. Explore the provided code, and make start making a plan to implement the required features in three areas: responsive design, accessibility and offline use.  
 5. Write code to implement the updates to get this site on its way to being a mobile-ready website.

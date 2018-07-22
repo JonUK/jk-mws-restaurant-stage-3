@@ -2,12 +2,10 @@
 const OFFLINE_CACHE_NAME = 'restaurant-cache-v4';
 
 const urlsToCache = [
-  // Network falling back to the cache
-  '/data/restaurants.json',
 
   // Cache falling back to the network
   '/',
-  '/restaurant',
+  '/restaurant.html',
   '/css/styles.css',
   '/css/restaurant.css',
   '/js/dbhelper.js',

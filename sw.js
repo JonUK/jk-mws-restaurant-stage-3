@@ -9,6 +9,7 @@ const urlsToCache = [
   '/',
   '/restaurant',
   '/css/styles.css',
+  '/css/restaurant.css',
   '/js/dbhelper.js',
   '/js/main.js',
   '/js/restaurant_info.js',

@@ -1,5 +1,5 @@
 {
-  "name": "jk-mws-restaurant-stage-2",
+  "name": "jk-mws-restaurant-stage-3",
   "version": "1.0.0",
   "description": "--- #### _Three Stage Course Material Project - Restaurant Reviews_",
   "main": "index.js",
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JonUK/jk-mws-restaurant-stage-2.git"
+    "url": "git+https://github.com/JonUK/jk-mws-restaurant-stage-3.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/JonUK/jk-mws-restaurant-stage-2/issues"
+    "url": "https://github.com/JonUK/jk-mws-restaurant-stage-3/issues"
   },
-  "homepage": "https://github.com/JonUK/jk-mws-restaurant-stage-2#readme",
+  "homepage": "https://github.com/JonUK/jk-mws-restaurant-stage-3#readme",
   "devDependencies": {
     "grunt": "^1.0.2",
     "grunt-cli": "^1.2.0",

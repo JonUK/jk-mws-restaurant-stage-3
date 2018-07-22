@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stars Rating Playarea</title>
+
+    <style>
+
+      .visuallyhidden {
+        border: 0;
+        clip: rect(0 0 0 0);
+        height: 1px;
+        margin: -1px;
+        overflow: hidden;
+        padding: 0;
+        position: absolute;
+        width: 1px
+      }
+
+    </style>
+
+
+</head>
+<body>
+
+  <!-- Technique and ideas taken from: -->
+  <!-- https://www.w3.org/WAI/tutorials/forms/custom-controls/ -->
+  <!-- https://blog.lunarlogic.io/2016/starability-css-accessible-rating-with-animations-on-top/ -->
+
+  <form action="">
+
+
+    <fieldset>
+      <legend>Stars rating</legend>
+
+      <input type="radio" id="rate1" name="rating" value="1" class="visuallyhidden">
+      <label for="rate1">1 star - Terrible</label>
+
+      <input type="radio" id="rate2" name="rating" value="2" class="visuallyhidden">
+      <label for="rate2">2 stars - Not good</label>
+
+      <input type="radio" id="rate3" name="rating" value="3" class="visuallyhidden">
+      <label for="rate3">3 stars - Average</label>
+
+      <input type="radio" id="rate4" name="rating" value="4" class="visuallyhidden">
+      <label for="rate4">4 stars - Good</label>
+
+      <input type="radio" id="rate5" name="rating" value="5" class="visuallyhidden">
+      <label for="rate5">5 stars - Very Good</label>
+
+    </fieldset>
+
+
+  </form>
+
+
+</body>
+</html>

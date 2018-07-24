@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Form Playarea</title>
+
+    <style>
+
+      .visually-hidden {
+         border: 0;
+         clip: rect(0 0 0 0);
+         height: 1px;
+         margin: -1px;
+         overflow: hidden;
+         padding: 0;
+         position: absolute;
+         width: 1px
+       }
+
+      /* By default, all stars are styled as if they are selected */
+      .star-rating svg {
+        width: 2.5em;
+        height: 2.5em;
+        fill: #FFFF00;
+        stroke: #7E7E00;
+        stroke-width: 3px;
+        /* Transparent border-bottom to avoid jumping when border is applied on :hover & :focus */
+        border-bottom: 3px solid transparent;
+      }
+
+      .star-rating label {
+        display: block;
+        float: left;
+        font-size: 1em;
+        height: 2.5em;
+      }
+
+      /* Style stars for the checked item and later siblings to not be selected */
+      .star-rating input:checked~label svg {
+        fill: #CCC;
+        stroke: #999;
+        stroke-width: 2px;
+      }
+
+      /* Style the checked item star as selected and add a bottom border */
+      .star-rating input:checked+label svg {
+        fill: #FFFF00;
+        stroke: #7E7E00;
+        stroke-width: 3px;
+        border-bottom-color: #7E7E00;
+      }
+
+      /* When an item has focus, show a dashed bottom border */
+      .star-rating input:focus+label svg {
+        border-bottom-style: dotted;
+      }
+
+      /* On hover of any item, show all stars as selected */
+      .star-rating:hover input+label svg {
+        fill: #FFFF00;
+        stroke: #7E7E00;
+        stroke-width: 3px;
+      }
+
+      /* Style the stars for the hovered item and later siblings to not be selected */
+      .star-rating input:hover~label svg,
+      .star-rating input:focus~label svg {
+        fill: #CCC;
+        stroke: #999;
+        stroke-width: 2px;
+      }
+
+      /* Style the star for the hovered item as selected */
+      .star-rating input:hover+label svg,
+      .star-rating input:focus+label svg {
+        fill: #FFFF00;
+        stroke: #7E7E00;
+        stroke-width: 3px;;
+      }
+
+    </style>
+
+
+</head>
+<body>
+
+  <!-- Technique and ideas taken from: -->
+  <!-- https://www.w3.org/WAI/tutorials/forms/custom-controls/ -->
+  <!-- https://blog.lunarlogic.io/2016/starability-css-accessible-rating-with-animations-on-top/ -->
+
+  <form action="#">
+
+    <fieldset>
+      <legend>Review this resturant</legend>
+
+    </fieldset>
+
+    <span class="star-rating">
+
+      <input value="0" id="star0" checked type="radio" name="rating" class="visually-hidden">
+      <label for="star0">
+        <span class="visually-hidden">0 Stars</span>
+      </label>
+
+      <input type="radio" id="rate1" name="rating" value="1" class="visually-hidden">
+      <label for="rate1">
+        <span class="visually-hidden">1 star</span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54.28 51.002"><path d="M245,185.3h18.605l5.692-17.511,5.529,17.511H293l-14.85,10.675,5.607,16.813-14.868-10.679-14.6,10.679,5.977-16.813Z" transform="translate(-241.824 -164.51)"/></svg>
+      </label>
+
+      <input type="radio" id="rate2" name="rating" value="2" class="visually-hidden">
+      <label for="rate2">
+        <span class="visually-hidden">2 stars</span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54.28 51.002"><path d="M245,185.3h18.605l5.692-17.511,5.529,17.511H293l-14.85,10.675,5.607,16.813-14.868-10.679-14.6,10.679,5.977-16.813Z" transform="translate(-241.824 -164.51)"/></svg>
+      </label>
+
+      <input type="radio" id="rate3" name="rating" value="3" class="visually-hidden">
+      <label for="rate3">
+        <span class="visually-hidden">3 stars</span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54.28 51.002"><path d="M245,185.3h18.605l5.692-17.511,5.529,17.511H293l-14.85,10.675,5.607,16.813-14.868-10.679-14.6,10.679,5.977-16.813Z" transform="translate(-241.824 -164.51)"/></svg>
+      </label>
+
+      <input type="radio" id="rate4" name="rating" value="4" class="visually-hidden">
+      <label for="rate4">
+        <span class="visually-hidden">4 stars</span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54.28 51.002"><path d="M245,185.3h18.605l5.692-17.511,5.529,17.511H293l-14.85,10.675,5.607,16.813-14.868-10.679-14.6,10.679,5.977-16.813Z" transform="translate(-241.824 -164.51)"/></svg>
+      </label>
+
+      <input type="radio" id="rate5" name="rating" value="5" class="visually-hidden">
+      <label for="rate5">
+        <span class="visually-hidden">5 stars</span>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54.28 51.002"><path d="M245,185.3h18.605l5.692-17.511,5.529,17.511H293l-14.85,10.675,5.607,16.813-14.868-10.679-14.6,10.679,5.977-16.813Z" transform="translate(-241.824 -164.51)"/></svg>
+      </label>
+
+      </span>
+
+  </form>
+
+
+</body>
+</html>

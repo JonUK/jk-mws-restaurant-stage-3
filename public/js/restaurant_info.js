@@ -104,8 +104,12 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   if (restaurant.operating_hours) {
     fillRestaurantHoursHTML();
   }
+
   // fill reviews
   fillReviewsHTML();
+
+  setupReviewForm();
+
 };
 
 /**
@@ -174,6 +178,24 @@ createReviewHTML = (review) => {
   return li;
 };
 
+setupReviewForm = () => {
+
+  let showFormButton = document.getElementById('show-review-form-button');
+  let reviewFormContent = document.getElementById('review-form-content');
+  let submitReviewButton = document.getElementById('submit-review-button');
+
+  setupButtonHandlers(showFormButton, () => {
+    reviewFormContent.style.display = 'block';
+    showFormButton.style.display = 'none';
+  });
+
+  setupButtonHandlers(submitReviewButton, () => {
+    // TODO: Add basic validation to check all fields entered.
+    alert('Send the review to the server');
+  })
+
+};
+
 /**
  * Add restaurant name to the breadcrumb navigation menu
  */
@@ -199,4 +221,21 @@ getParameterByName = (name, url) => {
   if (!results[2])
     return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
+};
+
+/**
+ * Setup handlers to call callback on button click or if space / enter keys pressed
+ */
+setupButtonHandlers = (buttonElement, callback) => {
+  buttonElement.addEventListener('click', (event) => {
+    event.preventDefault();
+    callback();
+  });
+
+  buttonElement.addEventListener('keyup', (event) => { // Ensure we cover keyboard users
+    event.preventDefault();
+    if (event.which === 32 || event.which === 13) { // Space and enter keys
+      callback();
+    }
+  });
 };

@@ -12,6 +12,7 @@
   <!-- Main CSS file -->
   <link rel="stylesheet" href="css/styles.css" type="text/css">
   <link rel="stylesheet" href="css/restaurant.css" type="text/css">
+  <link rel="stylesheet" href="css/review_form.css" type="text/css">
 
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.1/dist/leaflet.css" integrity="sha512-Rksm5RenBEKSKFjgI3a41vrjkw4EVPlJ3+OiI65vTjIdo9brlAacEuKOiQ5OFh7cOI1bkDwLqdLw3Zg0cRJAAQ==" crossorigin=""/>
   <title>Details | Restaurant Reviews</title>
@@ -58,6 +59,8 @@
     <!-- end restaurant -->
 
     <div id="restaurant-address"></div>
+
+
     <div id="restaurant-hours-container">
       <h3>Opening Times</h3>
       <table id="restaurant-hours"></table>
@@ -68,6 +71,81 @@
       <div id="details-map"></div>
     </section>
     <!-- End map -->
+
+    <!-- Beginning review form -->
+    <div id="review-form-container">
+      <form id="review-form" action="#" style="width: 100%">
+
+        <button id="show-review-form-button">Review This Restaurant</button>
+
+        <!-- Hide the form by default until user wants to review restaurant -->
+        <fieldset id="review-form-content" style="display: none;">
+
+          <!-- In HTML 5.2, adding a heading in a legend is valid -->
+          <!-- https://w3c.github.io/html/sec-forms.html#the-legend-element -->
+          <legend><h3>Review this resturant</h3></legend>
+
+          Your rating<br />
+
+          <span class="star-rating">
+
+              <input value="0" id="star0" checked type="radio" name="review-rating" class="visually-hidden">
+              <label for="star0">
+                <span class="visually-hidden">0 Stars</span>
+              </label>
+
+              <input type="radio" id="rate1" name="review-rating" value="1" class="visually-hidden">
+              <label for="rate1">
+                <span class="visually-hidden">1 star</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54.28 51.002"><path d="M245,185.3h18.605l5.692-17.511,5.529,17.511H293l-14.85,10.675,5.607,16.813-14.868-10.679-14.6,10.679,5.977-16.813Z" transform="translate(-241.824 -164.51)"/></svg>
+              </label>
+
+              <input type="radio" id="rate2" name="review-rating" value="2" class="visually-hidden">
+              <label for="rate2">
+                <span class="visually-hidden">2 stars</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54.28 51.002"><path d="M245,185.3h18.605l5.692-17.511,5.529,17.511H293l-14.85,10.675,5.607,16.813-14.868-10.679-14.6,10.679,5.977-16.813Z" transform="translate(-241.824 -164.51)"/></svg>
+              </label>
+
+              <input type="radio" id="rate3" name="review-rating" value="3" class="visually-hidden">
+              <label for="rate3">
+                <span class="visually-hidden">3 stars</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54.28 51.002"><path d="M245,185.3h18.605l5.692-17.511,5.529,17.511H293l-14.85,10.675,5.607,16.813-14.868-10.679-14.6,10.679,5.977-16.813Z" transform="translate(-241.824 -164.51)"/></svg>
+              </label>
+
+              <input type="radio" id="rate4" name="review-rating" value="4" class="visually-hidden">
+              <label for="rate4">
+                <span class="visually-hidden">4 stars</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54.28 51.002"><path d="M245,185.3h18.605l5.692-17.511,5.529,17.511H293l-14.85,10.675,5.607,16.813-14.868-10.679-14.6,10.679,5.977-16.813Z" transform="translate(-241.824 -164.51)"/></svg>
+              </label>
+
+              <input type="radio" id="rate5" name="review-rating" value="5" class="visually-hidden">
+              <label for="rate5">
+                <span class="visually-hidden">5 stars</span>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 54.28 51.002"><path d="M245,185.3h18.605l5.692-17.511,5.529,17.511H293l-14.85,10.675,5.607,16.813-14.868-10.679-14.6,10.679,5.977-16.813Z" transform="translate(-241.824 -164.51)"/></svg>
+              </label>
+
+            </span>
+
+          <!-- Clear left as the labels / svg images are float left -->
+          <div style="clear: left;"></div>
+
+          <div style="margin: 8px 0;">
+            <label for="review-name">Your name</label><br />
+            <input type="text" id="review-name">
+          </div>
+
+          <div style="margin: 8px 0;">
+            <label for="review-name">Comments</label><br />
+            <textarea id="review-comments" cols="30" rows="3"></textarea>
+          </div>
+
+          <button id="submit-review-button">Submit Review</button>
+
+        </fieldset>
+
+      </form>
+    </div>
+    <!-- End review form -->
 
     <!-- Beginning reviews -->
     <section id="reviews-container">

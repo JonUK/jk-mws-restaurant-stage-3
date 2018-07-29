@@ -129,14 +129,18 @@
           <!-- Clear left as the labels / svg images are float left -->
           <div style="clear: left;"></div>
 
-          <div style="margin: 8px 0;">
-            <label for="review-name">Your name</label><br />
-            <input type="text" id="review-name">
+          <div class="form-row">
+            <label for="reviewer-name">Your name</label><br />
+            <input type="text" id="reviewer-name">
           </div>
 
-          <div style="margin: 8px 0;">
-            <label for="review-name">Comments</label><br />
+          <div class="form-row">
+            <label for="review-comments">Comments</label><br />
             <textarea id="review-comments" cols="30" rows="3"></textarea>
+          </div>
+
+          <div id="review-form-validation-error" class="form-row error" style="display: none;">
+            Please fully complete the review form before submitting.
           </div>
 
           <button id="submit-review-button">Submit Review</button>

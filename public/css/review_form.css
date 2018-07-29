@@ -1,9 +1,8 @@
-#review-form input,
+#review-form input[type="text"],
 #review-form textarea {
   width: 100%;
   font-size: 1.1em;
   padding: 6px 10px;
-  margin: 8px 0;
   box-sizing: border-box;
 }
 
@@ -16,6 +15,15 @@
   text-align: center;
   text-decoration: none;
   display: inline-block;
+}
+
+#review-form .form-row {
+  margin: 10px 0;
+  font-size: 1.1em;
+}
+
+#review-form .form-row.error {
+  color: #dc3545;
 }
 
 /* By default, all stars are styled as if they are selected */

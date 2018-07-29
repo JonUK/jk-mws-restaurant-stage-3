@@ -190,6 +190,19 @@ setupReviewForm = () => {
   });
 
   setupButtonHandlers(submitReviewButton, () => {
+
+    // First check that the form has been fully completed
+    let checkedReviewRatingValue = document.querySelector('input[name="review-rating"]:checked').value;
+    let reviewerNameValue = document.getElementById('reviewer-name').value;
+    let reviewCommentsValue = document.getElementById('review-comments').value;
+    let formNotFullyComplete = checkedReviewRatingValue === "0" || !reviewerNameValue || !reviewCommentsValue;
+
+    if (formNotFullyComplete) {
+      let validationErrorElement = document.getElementById('review-form-validation-error');
+      validationErrorElement.style.display = 'block';
+      return;
+    }
+
     // TODO: Add basic validation to check all fields entered.
     alert('Send the review to the server');
   })

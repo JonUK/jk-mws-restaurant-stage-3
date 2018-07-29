@@ -5,20 +5,21 @@ var map;
  * Initialize map as soon as the page is loaded.
  */
 document.addEventListener('DOMContentLoaded', (event) => {
-  initMap();
+  initPage();
 });
 
 /**
- * Initialize leaflet map
+ * Initialize page including populate HTML and setup map
  */
-initMap = () => {
+initPage = () => {
+
   fetchRestaurantFromURL((error, restaurant) => {
     if (error) { // Got an error!
       console.error(error);
       return;
     }
 
-    fillBreadcrumb();
+    fillRestaurantHTML(restaurant);
 
     if (typeof L === 'undefined') {
       return; // If the Leaflet library has not been loaded / offline the don't show the map
@@ -39,7 +40,7 @@ initMap = () => {
     }).addTo(map);
 
 
-    DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
+    DBHelper.mapMarkerForRestaurant(restaurant, self.map);
 
   });
 };
@@ -48,31 +49,35 @@ initMap = () => {
  * Get current restaurant from page URL.
  */
 fetchRestaurantFromURL = (callback) => {
-  if (self.restaurant) { // restaurant already fetched!
-    callback(null, self.restaurant);
-    return;
-  }
-  const id = getParameterByName('id');
-  if (!id) { // no id found in URL
+
+  const idString = getParameterByName('id');
+
+  if (!idString) { // No id found in URL
     let error = 'No restaurant id in URL';
     callback(error, null);
-  } else {
-    DBHelper.fetchRestaurantById(id, (error, restaurant) => {
-      self.restaurant = restaurant;
-      if (!restaurant) {
-        console.error(error);
-        return;
-      }
-      fillRestaurantHTML();
-      callback(null, restaurant)
-    });
+    return;
   }
+
+  const id = parseInt(idString, 10);
+
+  DBHelper.fetchRestaurantById(id, (error, restaurant) => {
+    if (!restaurant) {
+      console.error(error);
+      return;
+    }
+
+    callback(null, restaurant)
+  });
+
 };
 
 /**
  * Create restaurant HTML and add it to the webpage
  */
-fillRestaurantHTML = (restaurant = self.restaurant) => {
+fillRestaurantHTML = (restaurant) => {
+
+  fillBreadcrumb(restaurant);
+
   const name = document.getElementById('restaurant-name');
   name.innerHTML = restaurant.name;
 
@@ -102,11 +107,11 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 
   // fill operating hours
   if (restaurant.operating_hours) {
-    fillRestaurantHoursHTML();
+    fillRestaurantHoursHTML(restaurant.operating_hours);
   }
 
   // fill reviews
-  fillReviewsHTML();
+  fillReviewsHTML(restaurant.reviews);
 
   setupReviewForm();
 
@@ -115,7 +120,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 /**
  * Create restaurant operating hours HTML table and add it to the webpage.
  */
-fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => {
+fillRestaurantHoursHTML = (operatingHours) => {
   const hours = document.getElementById('restaurant-hours');
   for (let key in operatingHours) {
     const row = document.createElement('tr');
@@ -135,7 +140,8 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+fillReviewsHTML = (reviews) => {
+
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h3');
   title.innerHTML = 'Reviews';
@@ -163,9 +169,15 @@ createReviewHTML = (review) => {
   name.innerHTML = review.name;
   li.appendChild(name);
 
-  const date = document.createElement('p');
-  date.innerHTML = review.date;
-  li.appendChild(date);
+  if (review.createdAt) {
+    let createdDate = new Date(review.createdAt);
+    let options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    let dateString = createdDate.toLocaleDateString('en-GB', options);
+
+    const date = document.createElement('p');
+    date.innerHTML = dateString;
+    li.appendChild(date);
+  }
 
   const rating = document.createElement('p');
   rating.innerHTML = `Rating: ${review.rating}`;
@@ -212,7 +224,7 @@ setupReviewForm = () => {
 /**
  * Add restaurant name to the breadcrumb navigation menu
  */
-fillBreadcrumb = (restaurant = self.restaurant) => {
+fillBreadcrumb = (restaurant) => {
   const breadcrumb = document.getElementById('breadcrumb');
   const li = document.createElement('li');
   li.innerHTML = restaurant.name;

@@ -10,22 +10,27 @@ let restaurantsPromise;
 class DBHelper {
 
   /**
-   * Server URL.
+   * Server root URL.
    * Change this to the restaurants JSON on your server.
    */
-  static get SERVER_URL() {
+  static get SERVER_ROOT_URL() {
     const port = 1337; // Change this to your server port
-    return `http://localhost:${port}/restaurants`;
+    return `http://localhost:${port}/`;
   }
 
   /**
    * Get an instance of the indexedDB promise for the database
    */
   static openDatabase() {
-    return idb.open('restaurant-db', 1, (upgradeDb) => {
+    return idb.open('restaurant-db', 2, (upgradeDb) => {
 
       if (!upgradeDb.objectStoreNames.contains('restaurants')) {
         upgradeDb.createObjectStore('restaurants', {keyPath: 'id'});
+      }
+
+      if (!upgradeDb.objectStoreNames.contains('reviews')) {
+        let reviewsStore = upgradeDb.createObjectStore('reviews', {keyPath: 'id'});
+        reviewsStore.createIndex('restaurantIndex', 'restaurant_id', {unique: false});
       }
 
     });
@@ -40,12 +45,32 @@ class DBHelper {
       });
   }
 
+  static getRestaurantReviewsFromCache(restaurantId) {
+    return DBHelper.openDatabase()
+      .then((db) => {
+        let transaction = db.transaction('reviews', 'readonly');
+        let store = transaction.objectStore('reviews');
+        let restaurantIndex = store.index('restaurantIndex');
+
+        return restaurantIndex.getAll(restaurantId);
+      });
+  }
+
   static addRestaurantsToCache(restaurants) {
     return DBHelper.openDatabase()
       .then((db) => {
         let transaction = db.transaction('restaurants', 'readwrite');
         let store = transaction.objectStore('restaurants');
         restaurants.forEach(restaurant => store.put(restaurant));
+      });
+  }
+
+  static addRestaurantReviewsToCache(restaurantReviews) {
+    return DBHelper.openDatabase()
+      .then((db) => {
+        let transaction = db.transaction('reviews', 'readwrite');
+        let store = transaction.objectStore('reviews');
+        restaurantReviews.forEach(restaurantReview => store.put(restaurantReview));
       });
   }
 
@@ -82,7 +107,7 @@ class DBHelper {
       DBHelper.getRestaurantsFromCache()
         .then((restaurants) => {
 
-          let restaurantsInCache = restaurants.length > 0;
+          let restaurantsInCache = Array.isArray(restaurants) && restaurants.length > 0;
 
           // If the restaurants were in the cache then return them before fetching from the
           // server. After we fetch from the server we will update the cache.
@@ -90,7 +115,7 @@ class DBHelper {
             resolve(restaurants);
           }
 
-          fetch(DBHelper.SERVER_URL)
+          fetch(DBHelper.SERVER_ROOT_URL + 'restaurants')
             .then((response) => {
 
               if (response.status === 200) {
@@ -113,14 +138,15 @@ class DBHelper {
                 reject(error);
               }
 
-            }).catch((err) => {
+            })
+            .catch((err) => {
 
-            if (restaurantsInCache) { // If restaurants were returned from cache, ignore error
-              return;
-            }
+              if (restaurantsInCache) { // If restaurants were returned from cache, ignore error
+                return;
+              }
 
-            const error = (`An error occurred. Error: ${err}`);
-            reject(error);
+              const error = (`An error occurred. Error: ${err}`);
+              reject(error);
           });
         });
     });
@@ -129,23 +155,92 @@ class DBHelper {
   }
 
   /**
+   * Get a promise for all the restaurant reviews. Will attempt to retrieve from cache first.
+   * Will always fetch from the server and update the cache.
+   * @returns {Promise}
+   */
+  static getRestaurantReviewsPromise(restaurantId) {
+
+    let restaurantReviewsPromise = new Promise(function (resolve, reject) {
+
+      DBHelper.getRestaurantReviewsFromCache(restaurantId)
+        .then((restaurantReviews) => {
+
+          let reviewsInCache = Array.isArray(restaurantReviews) && restaurantReviews.length > 0;
+
+          // If the reviews were in the cache then return them before fetching from the
+          // server. After we fetch from the server we will update the cache.
+          if (reviewsInCache) {
+            resolve(restaurantReviews);
+          }
+
+          fetch(DBHelper.SERVER_ROOT_URL + `reviews/?restaurant_id=${restaurantId}`)
+            .then((response) => {
+
+              if (response.status === 200) {
+                response.json().then(function (restaurantReviews) {
+
+                  DBHelper.addRestaurantReviewsToCache(restaurantReviews); // Ensure the restaurant reviews cache is always updated
+
+                  if (!reviewsInCache) { // If restaurant reviews weren't returned from cache, return them now
+                    resolve(restaurantReviews);
+                  }
+
+                });
+              } else { // Oh no... Houston we have a problem.
+
+                if (reviewsInCache) { // If restaurant reviews were returned from cache, ignore server error
+                  return;
+                }
+
+                const error = (`Request failed. Returned status of ${response.status}`);
+                reject(error);
+              }
+
+            })
+            .catch((err) => {
+
+              if (reviewsInCache) { // If restaurant reviews were returned from cache, ignore error
+                return;
+              }
+
+              const error = (`An error occurred. Error: ${err}`);
+              reject(error);
+          });
+        });
+
+    });
+
+    return restaurantReviewsPromise;
+  }
+
+  /**
    * Fetch a restaurant by its ID.
    */
   static fetchRestaurantById(id, callback) {
-    // fetch all restaurants with proper error handling.
-    DBHelper.getRestaurants((error, restaurants) => {
-      if (error) {
-        callback(error, null);
-      } else {
-        const restaurant = restaurants.find(r => r.id == id);
-        if (restaurant) { // Got the restaurant
+
+    let getRestaurantsPromise = DBHelper.getRestaurantsPromise();
+    let getRestaurantReviewsPromise = DBHelper.getRestaurantReviewsPromise(id);
+
+    // Get the restaurants and the restaurant reviews in parallel and only continue
+    // execution once both promises are resolved (or an error occurs).
+    Promise.all([getRestaurantsPromise, getRestaurantReviewsPromise])
+      .then((promiseValues) => {
+        let restaurant = promiseValues[0].find(r => r.id === id);
+        let resturantReviews = promiseValues[1];
+
+        if (restaurant) {
+          restaurant.reviews = resturantReviews;
           callback(null, restaurant);
-        } else { // Restaurant does not exist in the database
+        } else {
           callback('Restaurant does not exist', null);
         }
-      }
-    });
-  }
+
+      })
+      .catch((error) => {
+        callback(error, null);
+      });
+  };
 
   /**
    * Fetch restaurants by a cuisine type with proper error handling.

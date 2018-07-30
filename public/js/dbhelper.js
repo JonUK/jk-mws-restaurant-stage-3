@@ -74,6 +74,11 @@ class DBHelper {
       });
   }
 
+  static addRestaurantReviewToCache(restaurantReview) {
+    let restaurantReviews = [restaurantReview];
+    return DBHelper.addRestaurantReviewsToCache(restaurantReviews);
+  }
+
   /**
    * Get all restaurants.
    */
@@ -328,6 +333,45 @@ class DBHelper {
         const uniqueCuisines = cuisines.filter((v, i) => cuisines.indexOf(v) == i)
         callback(null, uniqueCuisines);
       }
+    });
+  }
+
+  /**
+   * Post a review to the server and add the server response (which contains the
+   * review Id) to the indexedDb. Returns a promise containing the new review.
+   * @returns {Promise}
+   */
+  static postReviewPromise(restaurantReview) {
+
+    return new Promise(function (resolve, reject) {
+
+      fetch(DBHelper.SERVER_ROOT_URL + 'reviews/',
+        {
+          method: 'POST',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(restaurantReview)
+        })
+        .then((response) => {
+
+          if (response.status === 201) {
+            response.json().then(function (serverRestaurantReview) {
+
+              DBHelper.addRestaurantReviewToCache(serverRestaurantReview);
+              resolve(serverRestaurantReview);
+
+            });
+          } else {
+            const error = (`Request failed. Returned status of ${response.status}`);
+            reject(error);
+          }
+        })
+        .catch((err) => {
+          const error = (`An error occurred. Error: ${err}`);
+          reject(error);
+        });
     });
   }
 

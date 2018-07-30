@@ -113,7 +113,7 @@ fillRestaurantHTML = (restaurant) => {
   // fill reviews
   fillReviewsHTML(restaurant.reviews);
 
-  setupReviewForm();
+  setupReviewForm(restaurant.id);
 
 };
 
@@ -160,6 +160,15 @@ fillReviewsHTML = (reviews) => {
   container.appendChild(ul);
 };
 
+
+/**
+ * Add an additional review to the end of the review list
+ */
+addAdditionalReviewHtml = (review) => {
+  const ul = document.getElementById('reviews-list');
+  ul.appendChild(createReviewHTML(review));
+};
+
 /**
  * Create review HTML and add it to the webpage.
  */
@@ -190,16 +199,9 @@ createReviewHTML = (review) => {
   return li;
 };
 
-setupReviewForm = () => {
+setupReviewForm = (id) => {
 
-  let showFormButton = document.getElementById('show-review-form-button');
-  let reviewFormContent = document.getElementById('review-form-content');
   let submitReviewButton = document.getElementById('submit-review-button');
-
-  setupButtonHandlers(showFormButton, () => {
-    reviewFormContent.style.display = 'block';
-    showFormButton.style.display = 'none';
-  });
 
   setupButtonHandlers(submitReviewButton, () => {
 
@@ -215,8 +217,29 @@ setupReviewForm = () => {
       return;
     }
 
-    // TODO: Add basic validation to check all fields entered.
-    alert('Send the review to the server');
+    let unixEpochMilliseconds = (new Date).getTime();
+    let ratingNumber = parseInt(checkedReviewRatingValue, 10);
+
+    // Temporary code to submit the review to the server. Will be change to be
+    // sent via the service worker later with a background sync.
+    let restaurantReview = {
+      "restaurant_id": id,
+      "name": reviewerNameValue,
+      "createdAt": unixEpochMilliseconds,
+      "updatedAt": unixEpochMilliseconds,
+      "rating": ratingNumber,
+      "comments": reviewCommentsValue
+    };
+
+    DBHelper.postReviewPromise(restaurantReview)
+      .then((newRestaurantReview) => {
+        let reviewFormContent = document.getElementById('review-form-content');
+        let reviewFormComplete = document.getElementById('review-form-complete');
+        reviewFormContent.style.display = 'none';
+        reviewFormComplete.style.display = 'block';
+
+        addAdditionalReviewHtml(newRestaurantReview)
+      });
   })
 
 };

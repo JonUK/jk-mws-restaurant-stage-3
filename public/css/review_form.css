@@ -1,3 +1,7 @@
+#review-form {
+  width: 100%;
+}
+
 #review-form input[type="text"],
 #review-form textarea {
   width: 100%;

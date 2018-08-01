@@ -222,7 +222,7 @@ setupReviewForm = (id) => {
 
     // Temporary code to submit the review to the server. Will be change to be
     // sent via the service worker later with a background sync.
-    let restaurantReview = {
+    let newRestaurantReview = {
       "restaurant_id": id,
       "name": reviewerNameValue,
       "createdAt": unixEpochMilliseconds,
@@ -231,8 +231,8 @@ setupReviewForm = (id) => {
       "comments": reviewCommentsValue
     };
 
-    DBHelper.postReviewPromise(restaurantReview)
-      .then((newRestaurantReview) => {
+    DBHelper.addRestaurantReviewToSyncCache(newRestaurantReview)
+      .then(() => {
         let reviewFormContent = document.getElementById('review-form-content');
         let reviewFormComplete = document.getElementById('review-form-complete');
         reviewFormContent.style.display = 'none';

@@ -201,14 +201,16 @@ createReviewHTML = (review) => {
 
 setupReviewForm = (id) => {
 
-  let submitReviewButton = document.getElementById('submit-review-button');
+  let reviewForm = document.getElementById('review-form');
 
-  setupButtonHandlers(submitReviewButton, () => {
+  reviewForm.addEventListener('submit', (event) => {
+
+    event.preventDefault();
 
     // First check that the form has been fully completed
     let checkedReviewRatingValue = document.querySelector('input[name="review-rating"]:checked').value;
-    let reviewerNameValue = document.getElementById('reviewer-name').value;
-    let reviewCommentsValue = document.getElementById('review-comments').value;
+    let reviewerNameValue = document.getElementById('reviewer-name').value.trim();
+    let reviewCommentsValue = document.getElementById('review-comments').value.trim();
     let formNotFullyComplete = checkedReviewRatingValue === "0" || !reviewerNameValue || !reviewCommentsValue;
 
     if (formNotFullyComplete) {
@@ -240,8 +242,7 @@ setupReviewForm = (id) => {
 
         addAdditionalReviewHtml(newRestaurantReview)
       });
-  })
-
+  });
 };
 
 /**
@@ -269,21 +270,4 @@ getParameterByName = (name, url) => {
   if (!results[2])
     return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
-};
-
-/**
- * Setup handlers to call callback on button click or if space / enter keys pressed
- */
-setupButtonHandlers = (buttonElement, callback) => {
-  buttonElement.addEventListener('click', (event) => {
-    event.preventDefault();
-    callback();
-  });
-
-  buttonElement.addEventListener('keyup', (event) => { // Ensure we cover keyboard users
-    event.preventDefault();
-    if (event.which === 32 || event.which === 13) { // Space and enter keys
-      callback();
-    }
-  });
 };

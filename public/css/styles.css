@@ -255,9 +255,16 @@ nav h1 a:active {
   margin: 0;
 }
 
+#restaurants-list li h2 a {
+  color: #CC8500; /* WCAG AA for large text on a background of white and the gray #F3F3F3  */
+}
+
 #restaurants-list p {
   margin: 0;
   font-size: 11pt;
 }
 
+.favourite-icon {
+  padding: 0 4px;
+}
 

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19.882 18.638">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #e60000;
+        stroke: #c60000;
+      }
+    </style>
+  </defs>
+  <g id="Heart_icon" data-name="Heart icon" transform="translate(-11.719 -12.776)">
+    <path id="Path_2" data-name="Path 2" class="cls-1" d="M21.66,15.795c-3.191-4.888-9.441-1.684-9.441,2.824,0,3.476,5.434,6.47,9.441,11.949C25.667,25.089,31.1,22.1,31.1,18.619,31.1,14.111,25.05,10.907,21.66,15.795Z" transform="translate(0 0)"/>
+  </g>
+</svg>

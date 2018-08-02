@@ -134,7 +134,6 @@ button {
 }
 
 #breadcrumb-favourite-container {
-  min-width: 300px; /* TODO: Review the use of this attribute value */
   text-align: right;
 }
 

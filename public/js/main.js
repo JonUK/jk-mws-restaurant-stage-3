@@ -174,7 +174,7 @@ createRestaurantHTML = (restaurant) => {
   nameLink.href = DBHelper.urlForRestaurant(restaurant);
   nameHeading.append(nameLink);
 
-  if (restaurant.is_favorite) {
+  if (restaurant.is_favorite === 'true') {
     const favouriteImg = document.createElement('img');
     favouriteImg.src = '/img/favourite-icon.svg';
     favouriteImg.width = 19;

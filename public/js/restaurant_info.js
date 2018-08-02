@@ -113,8 +113,9 @@ fillRestaurantHTML = (restaurant) => {
   // fill reviews
   fillReviewsHTML(restaurant.reviews);
 
-  setupReviewForm(restaurant.id);
+  setupFavouriteButtons(restaurant);
 
+  setupReviewForm(restaurant.id);
 };
 
 /**
@@ -210,6 +211,7 @@ createReviewHTML = (review) => {
 setupReviewForm = (id) => {
 
   let reviewForm = document.getElementById('review-form');
+  reviewForm.style.display = 'block';
 
   reviewForm.addEventListener('submit', (event) => {
 
@@ -277,6 +279,61 @@ setupReviewForm = (id) => {
   });
 };
 
+
+setupFavouriteButtons = (restaurant) => {
+
+  let addFavouriteButton = document.getElementById('add-favourite-button');
+  let removeFavouriteButton = document.getElementById('remove-favourite-button');
+  let buttonToShow = restaurant.is_favorite === 'true' ? removeFavouriteButton : addFavouriteButton;
+
+  buttonToShow.style.display = 'inline-block';
+
+  setupButtonHandlers(addFavouriteButton, (event) => {
+    event.stopPropagation();
+    changeRestaurantFavourite(restaurant.id, true);
+
+    addFavouriteButton.style.display = 'none';
+    removeFavouriteButton.style.display = 'inline-block'
+  });
+
+  setupButtonHandlers(removeFavouriteButton, (event) => {
+    event.stopPropagation();
+    changeRestaurantFavourite(restaurant.id, false);
+
+    removeFavouriteButton.style.display = 'none';
+    addFavouriteButton.style.display = 'inline-block'
+  });
+
+};
+
+changeRestaurantFavourite = (id, isFavourite) => {
+
+  let favouriteData = {
+    restaurant_id: id,
+    is_favourite: isFavourite
+  };
+
+  // If the browser supports background sync then use else bypass
+  if ('serviceWorker' in navigator && 'SyncManager' in window) {
+
+    DBHelper.addRestaurantFavouriteChangeToSyncCache(favouriteData)
+      .then(() => {
+        navigator.serviceWorker.ready.then(function(sw) {
+          return sw.sync.register('favourites-sync');
+        });
+      });
+
+  } else {
+
+    DBHelper.addRestaurantFavouriteChangeToSyncCache(favouriteData)
+      .then(() => {
+        DBHelper.syncFavouriteChangesWithServer();
+      });
+  }
+
+};
+
+
 /**
  * Add restaurant name to the breadcrumb navigation menu
  */
@@ -302,4 +359,21 @@ getParameterByName = (name, url) => {
   if (!results[2])
     return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
+};
+
+/**
+ * Setup handlers to call callback on button click or if space / enter keys pressed
+ */
+setupButtonHandlers = (buttonElement, callback) => {
+  buttonElement.addEventListener('click', (event) => {
+    event.preventDefault();
+    callback(event);
+  });
+
+  buttonElement.addEventListener('keyup', (event) => { // Ensure we cover keyboard users
+    event.preventDefault();
+    if (event.which === 32 || event.which === 13) { // Space and enter keys
+      callback(event);
+    }
+  });
 };

@@ -51,6 +51,10 @@ self.addEventListener('sync', function(event) {
     event.waitUntil(DBHelper.syncReviewsWithServer());
   }
 
+  if (event.tag === 'favourites-sync') {
+    event.waitUntil(DBHelper.syncFavouriteChangesWithServer());
+  }
+
 });
 
 self.addEventListener('fetch', function(event) {

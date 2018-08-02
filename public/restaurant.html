@@ -49,13 +49,19 @@
         <li><a href="/">Home</a></li>
       </ul>
 
-      <div id="breadcrumb-favourite-container">
+      <form action="#" id="breadcrumb-favourite-container">
 
-        <button id="breadcrumb-favourite-button">
+        <button id="add-favourite-button" style="display: none;">
           <img src="/img/favourite-button-icon.svg" width="19" height="17">
           Add To Favourites
         </button>
-      </div>
+
+        <button id="remove-favourite-button" style="display: none;">
+          <img src="/img/favourite-button-icon.svg" width="19" height="17">
+          Remove Favourite
+        </button>
+
+      </form>
 
     </div>
     <!-- End breadcrumb -->
@@ -84,7 +90,7 @@
 
     <!-- Beginning review form -->
     <div id="review-form-container">
-      <form id="review-form" action="#">
+      <form id="review-form" action="#" style="display: none;">
 
         <fieldset>
 

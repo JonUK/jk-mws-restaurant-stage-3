@@ -138,7 +138,7 @@ button {
   text-align: right;
 }
 
-#breadcrumb-favourite-button {
+#breadcrumb-favourite-container button {
   margin: 6px 0;
 }
 

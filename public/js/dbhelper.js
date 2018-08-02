@@ -38,6 +38,11 @@ class DBHelper {
         reviewsSyncStore.createIndex('restaurant-index', 'restaurant_id', {unique: false});
       }
 
+      if (!upgradeDb.objectStoreNames.contains('favourites-sync')) {
+        let reviewsSyncStore = upgradeDb.createObjectStore('favourites-sync', {keyPath: 'id', autoIncrement: true});
+        reviewsSyncStore.createIndex('restaurant-index', 'restaurant_id', {unique: false});
+      }
+
     });
   }
 
@@ -136,6 +141,33 @@ class DBHelper {
       .then((db) => {
         let transaction = db.transaction('reviews-sync', 'readwrite');
         let store = transaction.objectStore('reviews-sync');
+        store.clear();
+      });
+  }
+
+  static getAllFavouriteChangesFromSyncCache() {
+    return DBHelper.openDatabase()
+      .then((db) => {
+        let transaction = db.transaction('favourites-sync', 'readonly');
+        let store = transaction.objectStore('favourites-sync');
+        return store.getAll();
+      });
+  }
+
+  static addRestaurantFavouriteChangeToSyncCache(favouriteData) {
+    return DBHelper.openDatabase()
+      .then((db) => {
+        let transaction = db.transaction('favourites-sync', 'readwrite');
+        let store = transaction.objectStore('favourites-sync');
+        store.put(favouriteData);
+      });
+  }
+
+  static clearFavouriteChangesSyncCache() {
+    return DBHelper.openDatabase()
+      .then((db) => {
+        let transaction = db.transaction('favourites-sync', 'readwrite');
+        let store = transaction.objectStore('favourites-sync');
         store.clear();
       });
   }
@@ -427,6 +459,36 @@ class DBHelper {
       });
   }
 
+  /**
+   * Gets the favourite changes to send to the server from the favourites-sync store,
+   * puts each change on the server saves the restaurant data returned from the server
+   * in the restaurant store.
+   * @returns {Promise}
+   */
+  static syncFavouriteChangesWithServer() {
+
+    return DBHelper.getAllFavouriteChangesFromSyncCache()
+      .then((favouriteDataItems) => {
+
+        if (!favouriteDataItems) {
+          return Promise.resolve(null); // Nothing to do here
+        }
+
+        let putPromises = favouriteDataItems.map((favouriteDataItem) => DBHelper.getPutFavouriteChangeToServerPromise(favouriteDataItem));
+
+        return Promise.all(putPromises)
+          .then((serverRestaurants) => {
+
+            console.info(`Synced ${favouriteDataItems.length} favourite change(s) with the server`);
+            DBHelper.addRestaurantsToCache(serverRestaurants); // The restaurants from the server have the favourite flag updated
+            DBHelper.clearFavouriteChangesSyncCache();
+          })
+          .catch((err) => {
+            console.error(`An error occurred attempting to sync ${reviews.length} favourite change(s) with the server`, err);
+          });
+      });
+  }
+
   static getPostReviewToServerPromise(review) {
 
     review.id = undefined; // Clear the id field set from the reviews-sync store (autoIncrement: true)
@@ -447,7 +509,29 @@ class DBHelper {
           return response.json();
         }
 
-        throw new Error(`Post to the server to save a review failed. Returned status of ${response.status}`);
+        throw new Error(`POST to the server to save a review failed. Returned status of ${response.status}`);
+      })
+  }
+
+  static getPutFavouriteChangeToServerPromise(favouriteData) {
+
+    let fetchOptions = {
+      method: 'PUT',
+      headers: {
+        'Accept': 'application/json',
+      }
+    };
+
+    let url = DBHelper.SERVER_ROOT_URL + `restaurants/${favouriteData.restaurant_id}/?is_favorite=${favouriteData.is_favourite}`;
+
+    return fetch(url, fetchOptions)
+      .then((response) => {
+
+        if (response.status === 200) { // OK
+          return response.json();
+        }
+
+        throw new Error(`PUT to the server to save a favourite change failed. Returned status of ${response.status}`);
       })
   }
 

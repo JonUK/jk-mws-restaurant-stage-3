@@ -1,3 +1,5 @@
+importScripts('/js/idb.js');
+importScripts('/js/dbhelper.js');
 
 const OFFLINE_CACHE_NAME = 'restaurant-cache-v4';
 
@@ -33,13 +35,22 @@ self.addEventListener('activate', function(event) {
         return Promise.all(keyList.map((key) => {
 
           if (key !== OFFLINE_CACHE_NAME) {
-            console.log('Removing old cache', key);
+            console.info('Removing old cache', key);
             return caches.delete(key);
           }
 
         }))
       })
   )
+});
+
+self.addEventListener('sync', function(event) {
+  console.info('The service worker received a sync event', event.tag);
+
+  if (event.tag === 'reviews-sync') {
+    event.waitUntil(DBHelper.syncReviewsWithServer());
+  }
+
 });
 
 self.addEventListener('fetch', function(event) {

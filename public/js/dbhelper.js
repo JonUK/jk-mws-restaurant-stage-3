@@ -41,7 +41,7 @@ class DBHelper {
     });
   }
 
-  static getRestaurantsFromCache() {
+  static getAllRestaurantsFromCache() {
     return DBHelper.openDatabase()
       .then((db) => {
         let transaction = db.transaction('restaurants', 'readonly');
@@ -65,10 +65,7 @@ class DBHelper {
           let reviewsRestaurantIndex = reviewsStore.index('restaurant-index');
           let reviewsPromise = reviewsRestaurantIndex.getAll(restaurantId);
 
-          let reviewsSyncTransaction = db.transaction('reviews-sync', 'readonly');
-          let reviewsSyncStore = reviewsSyncTransaction.objectStore('reviews-sync');
-          let reviewsSyncRestaurantIndex = reviewsSyncStore.index('restaurant-index');
-          let reviewSyncPromise = reviewsSyncRestaurantIndex.getAll(restaurantId);
+          let reviewSyncPromise = DBHelper.getRestaurantReviewsFromSyncCache(restaurantId);
 
           Promise.all([reviewsPromise, reviewSyncPromise])
             .then((values) => {
@@ -88,6 +85,25 @@ class DBHelper {
     })
   }
 
+  static getAllReviewsFromSyncCache() {
+    return DBHelper.openDatabase()
+      .then((db) => {
+        let reviewsSyncTransaction = db.transaction('reviews-sync', 'readonly');
+        let reviewsSyncStore = reviewsSyncTransaction.objectStore('reviews-sync');
+        return reviewsSyncStore.getAll();
+      });
+  }
+
+  static getRestaurantReviewsFromSyncCache(restaurantId) {
+    return DBHelper.openDatabase()
+      .then((db) => {
+        let reviewsSyncTransaction = db.transaction('reviews-sync', 'readonly');
+        let reviewsSyncStore = reviewsSyncTransaction.objectStore('reviews-sync');
+        let reviewsSyncRestaurantIndex = reviewsSyncStore.index('restaurant-index');
+        return reviewsSyncRestaurantIndex.getAll(restaurantId);
+      });
+  }
+
   static addRestaurantsToCache(restaurants) {
     return DBHelper.openDatabase()
       .then((db) => {
@@ -97,7 +113,7 @@ class DBHelper {
       });
   }
 
-  static addRestaurantReviewsToCache(restaurantReviews) {
+  static addReviewsToCache(restaurantReviews) {
     return DBHelper.openDatabase()
       .then((db) => {
         let transaction = db.transaction('reviews', 'readwrite');
@@ -115,12 +131,21 @@ class DBHelper {
       });
   }
 
+  static clearReviewSyncCache() {
+    return DBHelper.openDatabase()
+      .then((db) => {
+        let transaction = db.transaction('reviews-sync', 'readwrite');
+        let store = transaction.objectStore('reviews-sync');
+        store.clear();
+      });
+  }
+
   /**
    * Get all restaurants.
    */
   static getRestaurants(callback) {
 
-    DBHelper.getRestaurantsPromise()
+    DBHelper.getAllRestaurantsPromise()
       .then((restaurants) => {
         callback(null, restaurants)
       })
@@ -134,7 +159,7 @@ class DBHelper {
    * Will always fetch from the server and update the cache.
    * @returns {Promise}
    */
-  static getRestaurantsPromise() {
+  static getAllRestaurantsPromise() {
 
     // If the promise to get the restaurants already exists then reuse it. In doing so
     // we ensure that the data is only retrieved from the cache and the server once
@@ -143,9 +168,9 @@ class DBHelper {
       return restaurantsPromise;
     }
 
-    restaurantsPromise = new Promise(function (resolve, reject) {
+    return new Promise(function (resolve, reject) {
 
-      DBHelper.getRestaurantsFromCache()
+      DBHelper.getAllRestaurantsFromCache()
         .then((restaurants) => {
 
           let restaurantsInCache = Array.isArray(restaurants) && restaurants.length > 0;
@@ -191,8 +216,6 @@ class DBHelper {
           });
         });
     });
-
-    return restaurantsPromise;
   }
 
   /**
@@ -202,7 +225,7 @@ class DBHelper {
    */
   static getRestaurantReviewsPromise(restaurantId) {
 
-    let restaurantReviewsPromise = new Promise(function (resolve, reject) {
+    return new Promise(function (resolve) { // Reject not used as not retrieving reviews is not terminal
 
       DBHelper.getRestaurantReviewsFromCache(restaurantId)
         .then((restaurantReviews) => {
@@ -221,7 +244,7 @@ class DBHelper {
               if (response.status === 200) {
                 response.json().then(function (restaurantReviews) {
 
-                  DBHelper.addRestaurantReviewsToCache(restaurantReviews); // Ensure the restaurant reviews cache is always updated
+                  DBHelper.addReviewsToCache(restaurantReviews); // Ensure the restaurant reviews cache is always updated
 
                   if (!reviewsInCache) { // If restaurant reviews weren't returned from cache, return them now
                     resolve(restaurantReviews);
@@ -234,8 +257,10 @@ class DBHelper {
                   return;
                 }
 
-                const error = (`Request failed. Returned status of ${response.status}`);
-                reject(error);
+                // Failing to retrieve reviews for a restaurant is not terminal. If there are
+                // no reviews in the cache and the server failed, return an empty list.
+                console.error('Request to get restaurant reviews failed with the status', response.status);
+                resolve([]);
               }
 
             })
@@ -245,14 +270,14 @@ class DBHelper {
                 return;
               }
 
-              const error = (`An error occurred. Error: ${err}`);
-              reject(error);
+              // Failing to retrieve reviews for a restaurant is not terminal. If there are
+              // no reviews in the cache and the server failed, return an empty list.
+              console.error('An error occurred retrieving resturant reviews from the server', err);
+              resolve([]);
           });
         });
 
     });
-
-    return restaurantReviewsPromise;
   }
 
   /**
@@ -260,15 +285,16 @@ class DBHelper {
    */
   static fetchRestaurantById(id, callback) {
 
-    let getRestaurantsPromise = DBHelper.getRestaurantsPromise();
+    let getRestaurantsPromise = DBHelper.getAllRestaurantsPromise();
     let getRestaurantReviewsPromise = DBHelper.getRestaurantReviewsPromise(id);
 
     // Get the restaurants and the restaurant reviews in parallel and only continue
     // execution once both promises are resolved (or an error occurs).
     Promise.all([getRestaurantsPromise, getRestaurantReviewsPromise])
-      .then((promiseValues) => {
-        let restaurant = promiseValues[0].find(r => r.id === id);
-        let resturantReviews = promiseValues[1];
+      .then((values) => {
+
+        let restaurant = values[0].find(r => r.id === id);
+        let resturantReviews = values[1];
 
         if (restaurant) {
           restaurant.reviews = resturantReviews;
@@ -373,45 +399,57 @@ class DBHelper {
   }
 
   /**
-   * Post a review to the server and add the server response (which contains the
-   * review Id) to the indexedDb. Returns a promise containing the new review.
+   * Get reviews to send to the server from the reviews-sync store, post each review
+   * to the server and if successful move the reviews from to the reviews store.
    * @returns {Promise}
    */
+  static syncReviewsWithServer() {
 
-  // TODO: Review this code and move concept of work to the service worker.
-  // static postReviewPromise(restaurantReview) {
-  //
-  //   return new Promise(function (resolve, reject) {
-  //
-  //     fetch(DBHelper.SERVER_ROOT_URL + 'reviews/',
-  //       {
-  //         method: 'POST',
-  //         headers: {
-  //           'Accept': 'application/json',
-  //           'Content-Type': 'application/json'
-  //         },
-  //         body: JSON.stringify(restaurantReview)
-  //       })
-  //       .then((response) => {
-  //
-  //         if (response.status === 201) {
-  //           response.json().then(function (serverRestaurantReview) {
-  //
-  //             DBHelper.addRestaurantReviewToCache(serverRestaurantReview);
-  //             resolve(serverRestaurantReview);
-  //
-  //           });
-  //         } else {
-  //           const error = (`Request failed. Returned status of ${response.status}`);
-  //           reject(error);
-  //         }
-  //       })
-  //       .catch((err) => {
-  //         const error = (`An error occurred. Error: ${err}`);
-  //         reject(error);
-  //       });
-  //   });
-  // }
+    return DBHelper.getAllReviewsFromSyncCache()
+      .then((reviews) => {
+
+        if (!reviews) {
+          return Promise.resolve(null); // Nothing to do here
+        }
+
+        let postPromises = reviews.map((review) => DBHelper.getPostReviewToServerPromise(review));
+
+        return Promise.all(postPromises)
+          .then((serverReviews) => {
+
+            console.info(`Synced ${reviews.length} review(s) with the server`);
+            DBHelper.addReviewsToCache(serverReviews); // The reviews from the server have the Id populated
+            DBHelper.clearReviewSyncCache();
+          })
+          .catch((err) => {
+            console.error(`An error occurred attempting to sync ${reviews.length} review(s) with the server`, err);
+          });
+      });
+  }
+
+  static getPostReviewToServerPromise(review) {
+
+    review.id = undefined; // Clear the id field set from the reviews-sync store (autoIncrement: true)
+
+    let fetchOptions = {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(review)
+    };
+
+    return fetch(DBHelper.SERVER_ROOT_URL + 'reviews/', fetchOptions)
+      .then((response) => {
+
+        if (response.status === 201) { // Created
+          return response.json();
+        }
+
+        throw new Error(`Post to the server to save a review failed. Returned status of ${response.status}`);
+      })
+  }
 
   /**
    * Restaurant page URL.

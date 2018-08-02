@@ -153,6 +153,14 @@ fillReviewsHTML = (reviews) => {
     container.appendChild(noReviews);
     return;
   }
+
+  if (reviews.length === 0) {
+    const noReviews = document.createElement('p');
+    noReviews.innerHTML = 'Unable to display reviews at this time!';
+    container.appendChild(noReviews);
+    return;
+  }
+
   const ul = document.getElementById('reviews-list');
   reviews.forEach(review => {
     ul.appendChild(createReviewHTML(review));
@@ -233,8 +241,16 @@ setupReviewForm = (id) => {
       "comments": reviewCommentsValue
     };
 
+
     DBHelper.addRestaurantReviewToSyncCache(newRestaurantReview)
       .then(() => {
+
+        // Once the review is in the sync cache, request a sync to the server
+        navigator.serviceWorker.ready.then(function(sw) {
+          return sw.sync.register('reviews-sync');
+        });
+
+        // Display the review and thank the user for their time
         let reviewFormContent = document.getElementById('review-form-content');
         let reviewFormComplete = document.getElementById('review-form-complete');
         reviewFormContent.style.display = 'none';

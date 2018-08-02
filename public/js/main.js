@@ -174,16 +174,16 @@ createRestaurantHTML = (restaurant) => {
   nameLink.href = DBHelper.urlForRestaurant(restaurant);
   nameHeading.append(nameLink);
 
-  // TODO: Add logic here so only show favourite icon if restaurant is a favourite
-  // TODO: Ensure the favourite icon is accessible
-  const favouriteImg = document.createElement('img');
-  favouriteImg.src = '/img/favourite-icon.svg';
-  favouriteImg.width = 19;
-  favouriteImg.height = 17;
-  favouriteImg.classList.add('favourite-icon');
-  favouriteImg.alt = 'This restaurant is in your favourites';
-  favouriteImg.title = 'This restaurant is in your favourites';
-  nameHeading.append(favouriteImg);
+  if (restaurant.is_favorite) {
+    const favouriteImg = document.createElement('img');
+    favouriteImg.src = '/img/favourite-icon.svg';
+    favouriteImg.width = 19;
+    favouriteImg.height = 17;
+    favouriteImg.classList.add('favourite-icon');
+    favouriteImg.alt = 'This restaurant is in your favourites';
+    favouriteImg.title = 'This restaurant is in your favourites';
+    nameHeading.append(favouriteImg);
+  }
 
   li.append(nameHeading);
 

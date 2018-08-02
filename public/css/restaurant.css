@@ -9,6 +9,7 @@ button {
   text-align: center;
   text-decoration: none;
   display: inline-block;
+  cursor: pointer;
 }
 
 #details-content {

@@ -241,23 +241,39 @@ setupReviewForm = (id) => {
       "comments": reviewCommentsValue
     };
 
+    /**
+     * Function to display the new review and thank the user for their time
+     */
+    let showReviewAndThankYouMessage = (restaurantReview) => {
+      let reviewFormContent = document.getElementById('review-form-content');
+      let reviewFormComplete = document.getElementById('review-form-complete');
+      reviewFormContent.style.display = 'none';
+      reviewFormComplete.style.display = 'block';
 
-    DBHelper.addRestaurantReviewToSyncCache(newRestaurantReview)
-      .then(() => {
+      addAdditionalReviewHtml(restaurantReview)
+    };
 
-        // Once the review is in the sync cache, request a sync to the server
-        navigator.serviceWorker.ready.then(function(sw) {
-          return sw.sync.register('reviews-sync');
+    // If the browser supports background sync then use else bypass
+    if ('serviceWorker' in navigator && 'SyncManager' in window) {
+
+      DBHelper.addRestaurantReviewToSyncCache(newRestaurantReview)
+        .then(() => {
+          navigator.serviceWorker.ready.then(function(sw) {
+            return sw.sync.register('reviews-sync');
+          });
+
+          showReviewAndThankYouMessage(newRestaurantReview);
         });
 
-        // Display the review and thank the user for their time
-        let reviewFormContent = document.getElementById('review-form-content');
-        let reviewFormComplete = document.getElementById('review-form-complete');
-        reviewFormContent.style.display = 'none';
-        reviewFormComplete.style.display = 'block';
+    } else {
 
-        addAdditionalReviewHtml(newRestaurantReview)
-      });
+      DBHelper.addRestaurantReviewToSyncCache(newRestaurantReview)
+        .then(() => {
+          DBHelper.syncReviewsWithServer();
+          showReviewAndThankYouMessage(newRestaurantReview);
+        });
+    }
+
   });
 };
 

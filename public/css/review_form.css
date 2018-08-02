@@ -2,6 +2,10 @@
   width: 100%;
 }
 
+#review-form fieldset {
+  min-height: 150px;
+}
+
 #review-form input[type="text"],
 #review-form textarea {
   width: 100%;

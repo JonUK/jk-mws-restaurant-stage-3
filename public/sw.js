@@ -15,7 +15,9 @@ const urlsToCache = [
   '/js/main.js',
   '/js/restaurant_info.js',
   '/js/sw_register.js',
-  '/js/idb.js'
+  '/js/idb.js',
+  '/img/favourite-button-icon.svg',
+  '/img/favourite-icon.svg'
 ];
 
 self.addEventListener('install', function(event) {

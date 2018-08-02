@@ -22,7 +22,7 @@ class DBHelper {
    * Get an instance of the indexedDB promise for the database
    */
   static openDatabase() {
-    return idb.open('restaurant-db', 5, (upgradeDb) => {
+    return idb.open('restaurant-db', 6, (upgradeDb) => {
 
       if (!upgradeDb.objectStoreNames.contains('restaurants')) {
         upgradeDb.createObjectStore('restaurants', {keyPath: 'id'});
@@ -39,8 +39,7 @@ class DBHelper {
       }
 
       if (!upgradeDb.objectStoreNames.contains('favourites-sync')) {
-        let reviewsSyncStore = upgradeDb.createObjectStore('favourites-sync', {keyPath: 'id', autoIncrement: true});
-        reviewsSyncStore.createIndex('restaurant-index', 'restaurant_id', {unique: false});
+        let reviewsSyncStore = upgradeDb.createObjectStore('favourites-sync', {keyPath: 'restaurant_id'});
       }
 
     });

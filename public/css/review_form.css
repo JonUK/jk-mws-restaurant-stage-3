@@ -10,17 +10,6 @@
   box-sizing: border-box;
 }
 
-#review-form button {
-  font-size: 1.1em;
-  background-color: #007dbb;
-  border: none;
-  color: white;
-  padding: 12px 20px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-}
-
 #review-form .form-row {
   margin: 10px 0;
   font-size: 1.1em;
